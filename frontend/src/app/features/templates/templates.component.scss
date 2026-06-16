@@ -1,0 +1,26 @@
+﻿.full-table { width: 100%; }
+
+.channel-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+  &.sms   { background: rgba(8,145,178,0.1);  color: var(--c-inflight-text); }
+  &.email { background: rgba(37,99,235,0.1);   color: var(--c-info-text);    }
+  &.push  { background: rgba(124,58,237,0.1);  color: #7c3aed; }
+}
+.dark-theme .channel-badge {
+  &.sms   { color: #67e8f9; } &.email { color: #60a5fa; } &.push  { color: #c4b5fd; }
+}
+
+.lang-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  background: var(--c-neutral-bg); color: var(--c-neutral-text);
+  padding: 2px 6px; border-radius: 4px;
+}
+
+.status-chip mat-icon { font-size: 12px; width: 12px; height: 12px; margin-right: 3px; }
+
+.retry-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px;
+  background: var(--c-info-bg); color: var(--c-info-text);
+  border-radius: 50%; font-size: 12px; font-weight: 700;
+}

@@ -1,0 +1,132 @@
+﻿<div class="dashboard">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Operations Dashboard</h1>
+      <p>Notification engine health and delivery metrics</p>
+    </div>
+    <div class="header-actions">
+      @if (summary) {
+        <span class="last-updated">
+          <mat-icon>schedule</mat-icon>
+          Updated {{ summary.lastUpdated | date:'HH:mm:ss' }}
+        </span>
+      }
+      <button mat-icon-button (click)="refresh()" class="refresh-btn" matTooltip="Refresh now">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="loading-center">
+      <mat-spinner diameter="44" />
+      <span>Loading dashboard…</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon> {{ error }}
+    </div>
+  }
+
+  @if (!loading && summary) {
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      @for (card of kpiCards; track card.key) {
+        <div class="kpi-card" [style.--accent]="card.color">
+          <div class="kpi-icon" [style.background]="card.color + '18'" [style.color]="card.color">
+            <mat-icon>{{ card.icon }}</mat-icon>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value">{{ getValue(card.key) | number:'1.0-1' }}{{ card.suffix ?? '' }}</div>
+            <div class="kpi-label">{{ card.label }}</div>
+          </div>
+          <div class="kpi-accent-line" [style.background]="card.color"></div>
+        </div>
+      }
+    </div>
+
+    <!-- Charts Grid -->
+    @if (charts) {
+      <div class="charts-grid">
+
+        <!-- 7-Day Trend (wide) -->
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <div>
+              <h3>Notification Trend</h3>
+              <p>Last 7 days — success, failure, total</p>
+            </div>
+          </div>
+          <apx-chart
+            [series]="trendOptions.series"
+            [chart]="trendOptions.chart"
+            [colors]="trendOptions.colors"
+            [fill]="trendOptions.fill"
+            [stroke]="trendOptions.stroke"
+            [xaxis]="trendOptions.xaxis"
+            [yaxis]="trendOptions.yaxis"
+            [grid]="trendOptions.grid"
+            [legend]="trendOptions.legend"
+            [tooltip]="trendOptions.tooltip" />
+        </div>
+
+        <!-- Success vs Failure Donut -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div><h3>Outcome Split</h3><p>Overall success vs failure</p></div>
+          </div>
+          <apx-chart
+            [series]="donutOptions.series"
+            [chart]="donutOptions.chart"
+            [labels]="donutOptions.labels"
+            [colors]="donutOptions.colors"
+            [legend]="donutOptions.legend"
+            [tooltip]="donutOptions.tooltip"
+            [dataLabels]="donutOptions.dataLabels"
+            [plotOptions]="donutOptions.plotOptions" />
+        </div>
+
+        <!-- Channel Distribution -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div><h3>Channel Volume</h3><p>Notifications per channel</p></div>
+          </div>
+          <apx-chart
+            [series]="channelOptions.series"
+            [chart]="channelOptions.chart"
+            [colors]="channelOptions.colors"
+            [xaxis]="channelOptions.xaxis"
+            [yaxis]="channelOptions.yaxis"
+            [grid]="channelOptions.grid"
+            [tooltip]="channelOptions.tooltip"
+            [plotOptions]="channelOptions.plotOptions"
+            [dataLabels]="channelOptions.dataLabels" />
+        </div>
+
+        <!-- Provider Success Rate (wide) -->
+        <div class="chart-card wide">
+          <div class="chart-header">
+            <div><h3>Provider Success Rate</h3><p>Delivery success % per provider</p></div>
+          </div>
+          <apx-chart
+            [series]="providerOptions.series"
+            [chart]="providerOptions.chart"
+            [colors]="providerOptions.colors"
+            [xaxis]="providerOptions.xaxis"
+            [yaxis]="providerOptions.yaxis"
+            [grid]="providerOptions.grid"
+            [tooltip]="providerOptions.tooltip"
+            [plotOptions]="providerOptions.plotOptions"
+            [dataLabels]="providerOptions.dataLabels" />
+        </div>
+
+      </div>
+    }
+  }
+</div>

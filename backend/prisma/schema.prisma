@@ -1,0 +1,378 @@
+// =============================================================
+// Notification Engine Operations & Monitoring Platform
+// Prisma Schema
+// =============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================
+// Enums
+// =============================================================
+
+enum Role {
+  Admin
+  Operations
+  Auditor
+  Viewer
+}
+
+enum NotificationStatus {
+  NE_CREATED
+  NE_PROCESSING
+  NE_PROCESSED
+  NE_FAILED
+  NE_SENDING
+  NE_SENT
+  NE_INITIALIZED
+  NE_UNDER_PROCESSING
+  NE_ROUTED
+  NE_SUCCESS
+  NE_RETRY
+  NE_PARTIALLY_FAILED
+  NE_PENDING
+}
+
+enum Channel {
+  SMS
+  EMAIL
+  PUSH
+}
+
+enum HealthStatus {
+  HEALTHY
+  DEGRADED
+  DOWN
+}
+
+enum AlertSeverity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+  SILENCED
+}
+
+enum AlertType {
+  QUEUE_BACKLOG
+  PROVIDER_DOWN
+  SLA_BREACH
+  ERROR_SPIKE
+}
+
+enum QueueStatus {
+  HEALTHY
+  WARNING
+  CRITICAL
+}
+
+enum RetryStatus {
+  PENDING
+  IN_PROGRESS
+  SUCCESS
+  FAILED
+}
+
+// =============================================================
+// Users
+// =============================================================
+
+model User {
+  id           String    @id @default(uuid())
+  username     String    @unique
+  passwordHash String
+  displayName  String
+  email        String?   @unique
+  role         Role      @default(Viewer)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+// =============================================================
+// Notifications
+// =============================================================
+
+model Notification {
+  id                String             @id @default(uuid())
+  notificationCode  String
+  eventId           String
+  requestId         String
+  messageId         String?
+  businessReference String?
+  channel           Channel
+  status            NotificationStatus @default(NE_CREATED)
+  recipient         String
+  providerId        String?
+  consumerChannelId String?
+  payload           Json?
+  metadata          Json?
+  errorDetails      String?
+  providerResponse  Json?
+  retryCount        Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  sentAt            DateTime?
+
+  provider        Provider?        @relation(fields: [providerId], references: [id])
+  consumerChannel ConsumerChannel? @relation(fields: [consumerChannelId], references: [id])
+  statusHistory   NotificationStatusHistory[]
+  retryAttempts   RetryAttempt[]
+
+  @@index([status])
+  @@index([channel])
+  @@index([eventId])
+  @@index([requestId])
+  @@index([businessReference])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model NotificationStatusHistory {
+  id             String             @id @default(uuid())
+  notificationId String
+  status         NotificationStatus
+  message        String?
+  metadata       Json?
+  createdAt      DateTime           @default(now())
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@index([notificationId])
+  @@map("notification_status_history")
+}
+
+// =============================================================
+// Providers
+// =============================================================
+
+model Provider {
+  id            String       @id @default(uuid())
+  name          String       @unique
+  channel       Channel
+  isEnabled     Boolean      @default(true)
+  throughput    Float        @default(0)
+  successRate   Float        @default(0)
+  failureRate   Float        @default(0)
+  avgLatencyMs  Float        @default(0)
+  status        HealthStatus @default(HEALTHY)
+  config        Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  notifications Notification[]
+
+  @@index([channel])
+  @@map("providers")
+}
+
+// =============================================================
+// Notification Templates
+// =============================================================
+
+model NotificationTemplate {
+  id               String   @id @default(uuid())
+  templateCode     String   @unique
+  notificationCode String
+  eventCode        String
+  channel          Channel
+  language         String   @default("en")
+  subject          String?
+  bodyTemplate     String
+  isEnabled        Boolean  @default(true)
+  retryCount       Int      @default(3)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([channel])
+  @@index([notificationCode])
+  @@map("notification_templates")
+}
+
+// =============================================================
+// IDM Contact Configuration
+// =============================================================
+
+model IdmContactConfig {
+  id            String   @id @default(uuid())
+  govAgency     String?
+  vrpCode       String?
+  roleName      String?
+  userId        String?
+  sector        String?
+  vendorId      String?
+  privateSector String?
+  isEnabled     Boolean  @default(true)
+  config        Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("idm_contact_configs")
+}
+
+// =============================================================
+// Queues
+// =============================================================
+
+model Queue {
+  id              String      @id @default(uuid())
+  name            String      @unique
+  channel         Channel?
+  capacity        Int         @default(10000)
+  currentDepth    Int         @default(0)
+  drainRate       Float       @default(0)
+  oldestMessageMs Int         @default(0)
+  status          QueueStatus @default(HEALTHY)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("queues")
+}
+
+// =============================================================
+// Consumer Channels
+// =============================================================
+
+model ConsumerChannel {
+  id                    String   @id @default(uuid())
+  name                  String   @unique
+  description           String?
+  isAuthorized          Boolean  @default(false)
+  isBanned              Boolean  @default(false)
+  smsSimulatorEnabled   Boolean  @default(false)
+  internationalSmsEnabled Boolean @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  notifications Notification[]
+
+  @@map("consumer_channels")
+}
+
+// =============================================================
+// Retry Attempts
+// =============================================================
+
+model RetryAttempt {
+  id             String      @id @default(uuid())
+  notificationId String
+  attemptNumber  Int
+  status         RetryStatus @default(PENDING)
+  errorDetails   String?
+  response       Json?
+  initiatedBy    String?
+  createdAt      DateTime    @default(now())
+  completedAt    DateTime?
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@index([notificationId])
+  @@map("retry_attempts")
+}
+
+// =============================================================
+// Workload
+// =============================================================
+
+model WorkloadSnapshot {
+  id              String   @id @default(uuid())
+  activeInstances Int      @default(1)
+  maxInstances    Int      @default(250)
+  cpuUsage        Float    @default(0)
+  memoryUsage     Float    @default(0)
+  queuePressure   Float    @default(0)
+  createdAt       DateTime @default(now())
+
+  @@map("workload_snapshots")
+}
+
+// =============================================================
+// Alerts
+// =============================================================
+
+model Alert {
+  id           String        @id @default(uuid())
+  type         AlertType
+  severity     AlertSeverity
+  source       String
+  message      String
+  status       AlertStatus   @default(ACTIVE)
+  startTime    DateTime      @default(now())
+  acknowledgedAt DateTime?
+  resolvedAt   DateTime?
+  silencedUntil DateTime?
+  metadata     Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status])
+  @@index([severity])
+  @@map("alerts")
+}
+
+// =============================================================
+// SLA Metrics
+// =============================================================
+
+model SlaMetric {
+  id             String   @id @default(uuid())
+  channel        Channel?
+  periodStart    DateTime
+  periodEnd      DateTime
+  compliance     Float    @default(0)
+  p50LatencyMs   Float    @default(0)
+  p90LatencyMs   Float    @default(0)
+  p95LatencyMs   Float    @default(0)
+  p99LatencyMs   Float    @default(0)
+  totalCount     Int      @default(0)
+  successCount   Int      @default(0)
+  failureCount   Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([periodStart])
+  @@map("sla_metrics")
+}
+
+// =============================================================
+// Audit Logs (immutable — no updatedAt, no cascades)
+// =============================================================
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  username     String
+  role         String
+  action       String
+  resource     String
+  resourceId   String?
+  beforeState  Json?
+  afterState   Json?
+  reason       String?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([resource])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

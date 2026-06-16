@@ -1,0 +1,83 @@
+<div class="login-root">
+
+  <!-- Left Panel – Branding -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <mat-icon>notifications_active</mat-icon>
+      </div>
+      <h1>Notification Engine</h1>
+      <p>Enterprise Operations &amp; Monitoring Platform</p>
+
+      <div class="brand-features">
+        <div class="feature-item"><mat-icon>speed</mat-icon><span>Real-time monitoring</span></div>
+        <div class="feature-item"><mat-icon>manage_search</mat-icon><span>Notification tracing</span></div>
+        <div class="feature-item"><mat-icon>notifications_active</mat-icon><span>Multi-channel delivery</span></div>
+        <div class="feature-item"><mat-icon>policy</mat-icon><span>Audit &amp; compliance</span></div>
+      </div>
+    </div>
+    <div class="brand-footer">© 2026 Notification Engine Platform</div>
+  </div>
+
+  <!-- Right Panel – Login Form -->
+  <div class="form-panel">
+    <div class="form-card">
+
+      <div class="form-header">
+        <div class="form-logo">
+          <mat-icon>lock_open</mat-icon>
+        </div>
+        <h2>Welcome back</h2>
+        <p>Sign in to your account to continue</p>
+      </div>
+
+      @if (error) {
+        <div class="form-error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error }}</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+        <mat-form-field appearance="outline" class="full-field">
+          <mat-label>Username</mat-label>
+          <mat-icon matPrefix>person_outline</mat-icon>
+          <input matInput formControlName="username" autocomplete="username" placeholder="Enter your username" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-field">
+          <mat-label>Password</mat-label>
+          <mat-icon matPrefix>lock_outline</mat-icon>
+          <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'"
+                 autocomplete="current-password" placeholder="Enter your password" />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-flat-button class="sign-in-btn" type="submit" [disabled]="loading || form.invalid">
+          @if (loading) {
+            <ng-container>
+              <mat-spinner diameter="18" class="btn-spinner" />
+              <span>Signing in…</span>
+            </ng-container>
+          } @else {
+            <ng-container>
+              <mat-icon>login</mat-icon>
+              <span>Sign In</span>
+            </ng-container>
+          }
+        </button>
+      </form>
+
+      <div class="credentials-hint">
+        <mat-icon>info_outline</mat-icon>
+        <div>
+          <strong>Demo credentials:</strong>
+          admin&nbsp;/&nbsp;Admin&#64;1234 &nbsp;·&nbsp; ops&nbsp;/&nbsp;Ops&#64;1234
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

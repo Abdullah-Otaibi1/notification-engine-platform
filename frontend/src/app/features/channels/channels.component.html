@@ -1,0 +1,58 @@
+﻿<div class="page-header">
+  <div><h1>Channel Health</h1><p>Delivery channel operational status and performance</p></div>
+</div>
+
+@if (loading) { <div class="loading-center"><mat-spinner diameter="40" /><span>Loading…</span></div> }
+@if (error)   { <div class="error-banner"><mat-icon>error</mat-icon>{{ error }}</div> }
+
+<div class="channel-grid">
+  @for (ch of channels; track ch.channel) {
+    <mat-card class="channel-card status-{{ ch.status.toLowerCase() }}">
+
+      <div class="card-header-row">
+        <div class="ch-icon {{ ch.channel.toLowerCase() }}">
+          <mat-icon>{{ channelIcon[ch.channel] || 'cell_tower' }}</mat-icon>
+        </div>
+        <div class="ch-title">
+          <h2>{{ ch.channel }}</h2>
+          <span class="status-chip {{ ch.status.toLowerCase() }}">
+            <span class="pulse" [class.active]="ch.status === 'HEALTHY'"></span>
+            {{ ch.status }}
+          </span>
+        </div>
+        <div class="ch-providers">
+          <mat-icon>hub</mat-icon>{{ ch.providerCount }} providers
+        </div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <span class="m-label">Throughput</span>
+          <span class="m-value">{{ ch.throughput | number }}<span class="m-unit"> msg/s</span></span>
+        </div>
+        <div class="metric">
+          <span class="m-label">Error Rate</span>
+          <span class="m-value {{ ch.errorRate > 5 ? 'bad' : ch.errorRate > 1 ? 'warn' : 'good' }}">
+            {{ ch.errorRate }}%
+          </span>
+        </div>
+        <div class="metric">
+          <span class="m-label">Avg Latency</span>
+          <span class="m-value {{ ch.avgLatencyMs > 500 ? 'bad' : ch.avgLatencyMs > 200 ? 'warn' : 'good' }}">
+            {{ ch.avgLatencyMs }}<span class="m-unit"> ms</span>
+          </span>
+        </div>
+      </div>
+
+      @if (ch.providers?.length) {
+        <div class="providers-row">
+          @for (p of ch.providers; track p.name) {
+            <div class="provider-pill {{ p.status.toLowerCase() }}" [title]="p.status + ' · ' + (p.isEnabled ? 'enabled' : 'disabled')">
+              <span class="pill-dot"></span>{{ p.name }}
+            </div>
+          }
+        </div>
+      }
+    </mat-card>
+  }
+</div>

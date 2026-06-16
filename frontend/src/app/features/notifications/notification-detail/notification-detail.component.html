@@ -1,0 +1,152 @@
+<div class="detail-page">
+
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button class="back-btn" (click)="back()" matTooltip="Back to notifications">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1>Notification Detail</h1>
+        <p>Full lifecycle and delivery trace</p>
+      </div>
+    </div>
+    @if (notification) {
+      <span class="status-chip {{ statusClass(notification.status) }} status-lg">{{ notification.status }}</span>
+    }
+  </div>
+
+  @if (loading) { <div class="loading-center"><mat-spinner diameter="44" /><span>Loading notification…</span></div> }
+  @if (error)   { <div class="error-banner"><mat-icon>error</mat-icon>{{ error }}</div> }
+
+  @if (!loading && notification) {
+    <div class="detail-layout">
+
+      <!-- Left: Core Info + Metadata -->
+      <div class="detail-left">
+
+        <!-- Core Fields Card -->
+        <mat-card class="info-card">
+          <div class="card-title"><mat-icon>info</mat-icon> Core Information</div>
+          <div class="fields-grid">
+            <div class="field full">
+              <span class="field-label">Notification ID</span>
+              <span class="mono selectable">{{ notification.id }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Message ID</span>
+              <span class="mono selectable">{{ notification.messageId ?? '—' }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Event ID</span>
+              <span class="mono selectable">{{ notification.eventId }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Request ID</span>
+              <span class="mono selectable">{{ notification.requestId }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Notification Code</span>
+              <span class="code-badge">{{ notification.notificationCode }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Channel</span>
+              <span class="channel-badge {{ notification.channel.toLowerCase() }}">{{ notification.channel }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Recipient</span>
+              <span class="field-value">{{ notification.recipient }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Provider</span>
+              <span class="field-value">{{ notification.provider?.name ?? '—' }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Consumer Channel</span>
+              <span class="field-value">{{ notification.consumerChannel?.name ?? '—' }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Retry Count</span>
+              <span class="retry-count">{{ notification.retryCount }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Created At</span>
+              <span class="field-value time">{{ notification.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Sent At</span>
+              <span class="field-value time">{{ (notification.sentAt | date:'yyyy-MM-dd HH:mm:ss') ?? '—' }}</span>
+            </div>
+          </div>
+
+          @if (notification.errorDetails) {
+            <div class="error-detail-box">
+              <mat-icon>error_outline</mat-icon>
+              <div><span class="err-label">Error Details</span><p>{{ notification.errorDetails }}</p></div>
+            </div>
+          }
+        </mat-card>
+
+        <!-- Retry Attempts Card -->
+        <mat-card class="info-card">
+          <div class="card-title">
+            <mat-icon>replay</mat-icon> Retry Attempts
+            <span class="badge">{{ notification.retryAttempts.length || 0 }}</span>
+          </div>
+
+          @if (!notification.retryAttempts.length) {
+            <div class="empty-mini"><mat-icon>check_circle</mat-icon><p>No retries — delivered on first attempt.</p></div>
+          } @else {
+            <div class="retry-list">
+              @for (r of notification.retryAttempts; track r.id) {
+                <div class="retry-item">
+                  <div class="attempt-badge">#{{ r.attemptNumber }}</div>
+                  <div class="attempt-details">
+                    <div class="attempt-row">
+                      <span class="status-chip {{ r.status.toLowerCase() }} sm">{{ r.status }}</span>
+                      <span class="attempt-time">{{ r.createdAt | date:'HH:mm:ss' }}</span>
+                    </div>
+                    @if (r.errorDetails) {
+                      <p class="attempt-error">{{ r.errorDetails }}</p>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </mat-card>
+
+      </div>
+
+      <!-- Right: Timeline -->
+      <div class="detail-right">
+        <mat-card class="timeline-card">
+          <div class="card-title"><mat-icon>timeline</mat-icon> Lifecycle Timeline</div>
+
+          <div class="timeline">
+            @for (step of timeline; track step.id; let i = $index; let last = $last) {
+              <div class="tl-step" [class.tl-step--last]="last">
+                <div class="tl-left">
+                  <div class="tl-dot" [class]="statusClass(step.status)"></div>
+                  @if (!last) { <div class="tl-line"></div> }
+                </div>
+                <div class="tl-content">
+                  <div class="tl-status">
+                    <span class="status-chip {{ statusClass(step.status) }} sm">{{ step.status }}</span>
+                  </div>
+                  <div class="tl-meta">
+                    <mat-icon class="tl-meta-icon">access_time</mat-icon>
+                    {{ step.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}
+                  </div>
+                  @if (step.message) {
+                    <div class="tl-message">{{ step.message }}</div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </mat-card>
+      </div>
+
+    </div>
+  }
+</div>

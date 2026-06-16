@@ -1,0 +1,363 @@
+// =============================================================
+// Global Styles — Notification Engine Platform
+// Premium Enterprise Design System
+// =============================================================
+
+@use '@angular/material' as mat;
+@include mat.core();
+
+// =============================================================
+// Material Theme
+// =============================================================
+$nep-primary: mat.m2-define-palette(mat.$m2-blue-palette, 600, 400, 800);
+$nep-accent:  mat.m2-define-palette(mat.$m2-cyan-palette, A400);
+$nep-warn:    mat.m2-define-palette(mat.$m2-red-palette, 500);
+
+$light-theme: mat.m2-define-light-theme((
+  color: (primary: $nep-primary, accent: $nep-accent, warn: $nep-warn),
+  typography: mat.m2-define-typography-config($font-family: '"Inter", "Roboto", sans-serif'),
+  density: -1,
+));
+$dark-theme: mat.m2-define-dark-theme((
+  color: (primary: $nep-primary, accent: $nep-accent, warn: $nep-warn),
+  typography: mat.m2-define-typography-config($font-family: '"Inter", "Roboto", sans-serif'),
+  density: -1,
+));
+
+@include mat.all-component-themes($light-theme);
+.dark-theme { @include mat.all-component-colors($dark-theme); }
+
+// =============================================================
+// Design Tokens — CSS Custom Properties
+// =============================================================
+:root {
+  // Sidebar (always dark regardless of light/dark mode)
+  --sidebar-bg:            #0b1120;
+  --sidebar-border:        rgba(255,255,255,0.06);
+  --sidebar-text:          rgba(203,213,225,0.75);
+  --sidebar-text-hover:    #e2e8f0;
+  --sidebar-text-active:   #ffffff;
+  --sidebar-icon-active:   #60a5fa;
+  --sidebar-item-hover:    rgba(255,255,255,0.06);
+  --sidebar-active-bg:     rgba(59,130,246,0.18);
+  --sidebar-active-border: #3b82f6;
+  --sidebar-width:         248px;
+  --sidebar-header:        #060e1d;
+
+  // Brand
+  --primary:       #2563eb;
+  --primary-light: rgba(37,99,235,0.1);
+  --primary-glow:  rgba(37,99,235,0.3);
+
+  // Light surface tokens
+  --bg:            #f0f4f8;
+  --surface:       #ffffff;
+  --surface-2:     #f8fafc;
+  --border:        #e2e8f0;
+  --text:          #0f172a;
+  --text-2:        #475569;
+  --text-3:        #94a3b8;
+
+  // Toolbar
+  --toolbar-bg:     rgba(255,255,255,0.95);
+  --toolbar-border: rgba(226,232,240,0.8);
+
+  // Card
+  --card-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.06);
+  --card-hover:  0 4px 20px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
+  --card-radius: 10px;
+
+  // Table
+  --table-header: #f8fafc;
+  --table-hover:  rgba(37,99,235,0.04);
+  --table-border: #f1f5f9;
+
+  // Status
+  --c-success:      #059669; --c-success-bg:  rgba(5,150,105,0.1);  --c-success-text: #065f46;
+  --c-failure:      #dc2626; --c-failure-bg:  rgba(220,38,38,0.1);  --c-failure-text: #991b1b;
+  --c-warning:      #d97706; --c-warning-bg:  rgba(217,119,6,0.1);  --c-warning-text: #92400e;
+  --c-info:         #2563eb; --c-info-bg:     rgba(37,99,235,0.1);  --c-info-text:    #1e40af;
+  --c-inflight:     #0891b2; --c-inflight-bg: rgba(8,145,178,0.1);  --c-inflight-text:#164e63;
+  --c-neutral:      #64748b; --c-neutral-bg:  rgba(100,116,139,0.1);--c-neutral-text: #334155;
+}
+
+.dark-theme {
+  --bg:            #0b1120;
+  --surface:       #131f35;
+  --surface-2:     #0e1829;
+  --border:        rgba(255,255,255,0.07);
+  --text:          #f0f6ff;
+  --text-2:        #94a3b8;
+  --text-3:        #64748b;
+
+  --toolbar-bg:     rgba(13,20,40,0.96);
+  --toolbar-border: rgba(255,255,255,0.08);
+
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.3);
+
+  --table-header: rgba(255,255,255,0.03);
+  --table-hover:  rgba(96,165,250,0.06);
+  --table-border: rgba(255,255,255,0.05);
+
+  --c-success-text: #34d399;
+  --c-failure-text: #f87171;
+  --c-warning-text: #fbbf24;
+  --c-info-text:    #60a5fa;
+  --c-inflight-text:#67e8f9;
+  --c-neutral-text: #94a3b8;
+}
+
+// =============================================================
+// Base Reset
+// =============================================================
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+// =============================================================
+// Angular Material Overrides — Global
+// =============================================================
+
+// Body background + color from CSS vars
+body { background: var(--bg) !important; }
+
+// Card
+.mat-mdc-card {
+  background: var(--surface) !important;
+  box-shadow: var(--card-shadow) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--card-radius) !important;
+  overflow: hidden;
+}
+
+// Toolbar
+.mat-toolbar {
+  background: var(--toolbar-bg) !important;
+  color: var(--text) !important;
+  border-bottom: 1px solid var(--toolbar-border) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+// Sidenav
+.mat-drawer, .mat-sidenav {
+  background: var(--sidebar-bg) !important;
+  border-right: 1px solid var(--sidebar-border) !important;
+}
+.mat-drawer-container { background: var(--bg) !important; }
+
+// Tables
+.mat-mdc-table {
+  background: var(--surface) !important;
+  .mat-mdc-header-row { background: var(--table-header) !important; }
+  .mat-mdc-row:hover  { background: var(--table-hover) !important; }
+  .mat-mdc-header-cell {
+    color: var(--text-2) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border) !important;
+  }
+  .mat-mdc-cell {
+    color: var(--text) !important;
+    font-size: 13px !important;
+    border-bottom: 1px solid var(--table-border) !important;
+  }
+  .mat-mdc-row { transition: background 0.15s ease; }
+}
+
+// Paginator
+.mat-mdc-paginator {
+  background: var(--surface) !important;
+  color: var(--text-2) !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+// Form fields
+.mat-mdc-form-field {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--border) !important;
+  }
+  &:hover .mdc-notched-outline__leading,
+  &:hover .mdc-notched-outline__notch,
+  &:hover .mdc-notched-outline__trailing {
+    border-color: var(--primary) !important;
+  }
+  .mat-mdc-form-field-input-control { color: var(--text) !important; }
+  .mat-mdc-floating-label { color: var(--text-3) !important; }
+}
+
+// Chips
+.mat-mdc-chip-set .mat-mdc-standard-chip {
+  background: var(--surface-2, rgba(0,0,0,0.05)) !important;
+  color: var(--text-2) !important;
+  border: 1px solid var(--border) !important;
+  font-size: 12px !important;
+  height: 24px !important;
+}
+
+// Select panel
+.mat-mdc-select-panel { background: var(--surface) !important; }
+.mat-mdc-option       { color: var(--text) !important; }
+
+// Tooltip
+.mat-mdc-tooltip .mdc-tooltip__surface {
+  background: var(--sidebar-bg) !important;
+  color: #e2e8f0 !important;
+  font-size: 11px !important;
+}
+
+// Divider
+.mat-divider { border-top-color: var(--border) !important; }
+
+// Spinner
+.mat-mdc-progress-spinner circle { stroke: var(--primary) !important; }
+
+// =============================================================
+// Scrollbar
+// =============================================================
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.6); }
+
+// =============================================================
+// Global Utility — Page Layout
+// =============================================================
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  p { margin: 2px 0 0; font-size: 13px; color: var(--text-3); }
+}
+
+// =============================================================
+// Global Utility — Status Chips
+// =============================================================
+.status-chip, .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+
+  &.success, &.healthy  { background: var(--c-success-bg);  color: var(--c-success-text); }
+  &.failure, &.down     { background: var(--c-failure-bg);  color: var(--c-failure-text); }
+  &.warning, &.degraded { background: var(--c-warning-bg);  color: var(--c-warning-text); }
+  &.info                { background: var(--c-info-bg);     color: var(--c-info-text);    }
+  &.inflight            { background: var(--c-inflight-bg); color: var(--c-inflight-text);}
+  &.pending             { background: var(--c-warning-bg);  color: var(--c-warning-text); }
+  &.neutral             { background: var(--c-neutral-bg);  color: var(--c-neutral-text); }
+}
+
+// =============================================================
+// Global Utility — Loading / Error / Empty
+// =============================================================
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 16px;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--c-failure-bg);
+  color: var(--c-failure-text);
+  border: 1px solid rgba(220,38,38,0.2);
+  border-radius: var(--card-radius);
+  margin-bottom: 16px;
+  font-size: 13px;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 24px;
+  color: var(--text-3);
+  gap: 10px;
+  mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.5; }
+  p { margin: 0; font-size: 14px; }
+}
+
+// =============================================================
+// Global Utility — Tables
+// =============================================================
+.data-table-card {
+  border-radius: var(--card-radius) !important;
+  overflow: hidden;
+
+  table { width: 100%; }
+  .mat-mdc-header-cell { padding: 0 16px !important; height: 44px !important; }
+  .mat-mdc-cell        { padding: 0 16px !important; height: 52px !important; }
+
+  .clickable-row {
+    cursor: pointer;
+    &:hover { background: var(--table-hover) !important; }
+  }
+}
+
+// code monospace
+.mono {
+  font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+  font-size: 11px;
+  background: var(--surface-2, rgba(0,0,0,0.05));
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-2);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+// filter card
+.filter-card {
+  margin-bottom: 16px;
+  padding: 16px !important;
+  border-radius: var(--card-radius) !important;
+  .filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-field { flex: 1; min-width: 150px; max-width: 220px; }
+  .filter-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+}

@@ -1,0 +1,72 @@
+﻿<div class="page-header">
+  <div><h1>Queue Monitoring</h1><p>Message queue depths, drain rates, and capacity utilisation</p></div>
+</div>
+
+@if (loading) { <div class="loading-center"><mat-spinner diameter="40" /><span>Loading…</span></div> }
+@if (error)   { <div class="error-banner"><mat-icon>error</mat-icon>{{ error }}</div> }
+
+@if (!loading) {
+  <mat-card class="data-table-card">
+    <table mat-table [dataSource]="queues" class="full-table">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Queue Name</th>
+        <td mat-cell *matCellDef="let r">
+          <div class="queue-name-cell">
+            <mat-icon class="q-icon">queue</mat-icon>
+            <span class="mono">{{ r.name }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="channel">
+        <th mat-header-cell *matHeaderCellDef>Channel</th>
+        <td mat-cell *matCellDef="let r">
+          @if (r.channel) {
+            <span class="channel-badge {{ r.channel.toLowerCase() }}">{{ r.channel }}</span>
+          } @else { <span class="text-muted">—</span> }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="currentDepth">
+        <th mat-header-cell *matHeaderCellDef>Depth / Capacity</th>
+        <td mat-cell *matCellDef="let r">
+          <div class="depth-cell">
+            <div class="depth-bar-track">
+              <div class="depth-bar-fill" [class]="r.status.toLowerCase()" [style.width]="fillPct(r) + '%'"></div>
+            </div>
+            <span class="depth-label">{{ r.currentDepth | number }} / {{ r.capacity | number }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="capacity">
+        <th mat-header-cell *matHeaderCellDef>Fill %</th>
+        <td mat-cell *matCellDef="let r">
+          <span class="fill-pct" [class]="r.status.toLowerCase()">{{ fillPct(r) }}%</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fillPct">
+        <th mat-header-cell *matHeaderCellDef>Drain Rate</th>
+        <td mat-cell *matCellDef="let r" class="metric-cell">{{ r.drainRate | number:'1.0-1' }} msg/s</td>
+      </ng-container>
+
+      <ng-container matColumnDef="drainRate">
+        <th mat-header-cell *matHeaderCellDef>Oldest Message</th>
+        <td mat-cell *matCellDef="let r" class="metric-cell">{{ ageStr(r.oldestMessageMs) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="oldestMessageMs">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let r">
+          <span class="status-chip {{ r.status.toLowerCase() }}">{{ r.status }}</span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+    @if (!queues.length) { <div class="empty-state"><mat-icon>queue</mat-icon><p>No queues found.</p></div> }
+  </mat-card>
+}

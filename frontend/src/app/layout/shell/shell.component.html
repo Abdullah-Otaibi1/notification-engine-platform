@@ -1,0 +1,101 @@
+<mat-sidenav-container class="shell-container">
+
+  <!-- ====== Sidebar ====== -->
+  <mat-sidenav mode="side" opened class="sidenav">
+
+    <!-- Logo Header -->
+    <div class="nav-header">
+      <div class="nav-logo">
+        <div class="logo-mark"><mat-icon>notifications_active</mat-icon></div>
+        <div class="logo-text">
+          <span class="logo-name">NE Platform</span>
+          <span class="logo-env">Operations</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav Groups -->
+    <div class="nav-scroll">
+      <div class="nav-section-label">MONITORING</div>
+      <nav class="nav-list">
+        @for (item of navItems.slice(0,4); track item.route) {
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+
+      <div class="nav-section-label">CONFIGURATION</div>
+      <nav class="nav-list">
+        @for (item of navItems.slice(4,9); track item.route) {
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+
+      <div class="nav-section-label">OPERATIONS</div>
+      <nav class="nav-list">
+        @for (item of navItems.slice(9); track item.route) {
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+    </div>
+
+    <!-- User Area at Bottom -->
+    @if (auth.user(); as user) {
+      <div class="nav-user">
+        <div class="user-avatar" [style.background]="roleColor()">
+          {{ user.displayName.charAt(0).toUpperCase() }}
+        </div>
+        <div class="user-info">
+          <span class="user-name">{{ user.displayName }}</span>
+          <span class="user-role">{{ user.role }}</span>
+        </div>
+        <button mat-icon-button class="logout-btn" (click)="auth.logout()" title="Logout">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    }
+  </mat-sidenav>
+
+  <!-- ====== Main Area ====== -->
+  <mat-sidenav-content class="main-area">
+
+    <!-- Top Bar -->
+    <mat-toolbar class="app-toolbar">
+      <div class="toolbar-left">
+        <!-- Breadcrumb placeholder; add real breadcrumb service if needed -->
+      </div>
+      <div class="toolbar-right">
+        <button mat-icon-button class="toolbar-btn"
+                (click)="theme.toggle()"
+                [title]="theme.mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+          <mat-icon>{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+
+        @if (auth.user(); as user) {
+          <div class="toolbar-user">
+            <div class="t-avatar" [style.background]="roleColor()">{{ user.displayName.charAt(0).toUpperCase() }}</div>
+            <div class="t-info">
+              <span class="t-name">{{ user.displayName }}</span>
+              <span class="t-role" [style.color]="roleColor()">{{ user.role }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </mat-toolbar>
+
+    <!-- Page Content -->
+    <main class="page-content">
+      <router-outlet />
+    </main>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
