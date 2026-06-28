@@ -5,16 +5,15 @@ import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationsService } from './notifications.service';
 import { NotificationRow, NotificationFilter } from '../../core/models/notification.model';
+import { PageHeaderComponent, LoadingStateComponent, EmptyStateComponent } from '../../shared';
 
 const STATUS_OPTIONS = [
   'NE_CREATED','NE_PROCESSING','NE_PROCESSED','NE_FAILED',
@@ -28,9 +27,10 @@ const CHANNEL_OPTIONS = ['SMS', 'EMAIL', 'PUSH'];
   standalone: true,
   imports: [
     CommonModule, DatePipe, FormsModule,
-    MatCardModule, MatTableModule, MatIconModule, MatProgressSpinnerModule,
+    MatCardModule, MatTableModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatChipsModule, MatPaginatorModule, MatTooltipModule,
+    MatButtonModule, MatPaginatorModule, MatTooltipModule,
+    PageHeaderComponent, LoadingStateComponent, EmptyStateComponent,
   ],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.scss',
@@ -52,9 +52,10 @@ export class NotificationsComponent implements OnInit {
 
   load() {
     this.loading = true;
+    this.error = '';
     this.svc.search({ ...this.filter, page: this.page + 1, pageSize: this.pageSize }).subscribe({
-      next:  (r) => { this.rows = r.items; this.total = r.total; this.loading = false; },
-      error: (err) => { this.error = err?.error?.error?.message ?? 'Failed to load notifications'; this.loading = false; },
+      next:  (r) => { this.rows = r.items; this.total = r.total; this.error = ''; this.loading = false; },
+      error: (err) => { this.rows = []; this.total = 0; this.error = err?.error?.error?.message ?? 'Failed to load notifications'; this.loading = false; },
     });
   }
 

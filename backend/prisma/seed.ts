@@ -45,18 +45,32 @@ async function main() {
 // Users
 // -----------------------------------------------
 async function seedUsers() {
+  const isProd = process.env.NODE_ENV === 'production';
+
+  // Passwords come from env. Dev-only fallbacks are used when NOT in production;
+  // in production a missing password aborts the seed so we never create demo
+  // accounts with predictable credentials.
   const users = [
-    { username: 'admin',   displayName: 'System Admin',     email: 'admin@nep.local',   role: Role.Admin,      password: 'Admin@1234' },
-    { username: 'ops',     displayName: 'Operations User',  email: 'ops@nep.local',     role: Role.Operations, password: 'Ops@1234' },
-    { username: 'auditor', displayName: 'Audit User',       email: 'auditor@nep.local', role: Role.Auditor,    password: 'Auditor@1234' },
-    { username: 'viewer',  displayName: 'Viewer User',      email: 'viewer@nep.local',  role: Role.Viewer,     password: 'Viewer@1234' },
+    { username: 'admin',   displayName: 'System Admin',    email: 'admin@nep.local',   role: Role.Admin,      envKey: 'SEED_ADMIN_PASSWORD',   devDefault: 'Admin@1234' },
+    { username: 'ops',     displayName: 'Operations User', email: 'ops@nep.local',     role: Role.Operations, envKey: 'SEED_OPS_PASSWORD',     devDefault: 'Ops@1234' },
+    { username: 'auditor', displayName: 'Audit User',      email: 'auditor@nep.local', role: Role.Auditor,    envKey: 'SEED_AUDITOR_PASSWORD', devDefault: 'Auditor@1234' },
+    { username: 'viewer',  displayName: 'Viewer User',     email: 'viewer@nep.local',  role: Role.Viewer,     envKey: 'SEED_VIEWER_PASSWORD',  devDefault: 'Viewer@1234' },
   ];
 
   for (const u of users) {
-    const passwordHash = await bcrypt.hash(u.password, 12);
+    const password = process.env[u.envKey] ?? (isProd ? undefined : u.devDefault);
+    if (!password) {
+      throw new Error(
+        `Refusing to seed user "${u.username}" in production without ${u.envKey}. ` +
+        `Set ${u.envKey} (and the other SEED_*_PASSWORD vars) before seeding.`,
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
     await prisma.user.upsert({
       where: { username: u.username },
-      update: {},
+      // Rotate the password hash on re-seed so a new env value actually applies.
+      update: { passwordHash, displayName: u.displayName, email: u.email, role: u.role },
       create: { username: u.username, passwordHash, displayName: u.displayName, email: u.email, role: u.role },
     });
   }

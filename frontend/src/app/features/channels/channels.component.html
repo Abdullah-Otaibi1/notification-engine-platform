@@ -1,10 +1,13 @@
-﻿<div class="page-header">
-  <div><h1>Channel Health</h1><p>Delivery channel operational status and performance</p></div>
-</div>
+﻿<nep-page-header title="Channel Health" subtitle="Delivery channel operational status and performance" />
 
-@if (loading) { <div class="loading-center"><mat-spinner diameter="40" /><span>Loading…</span></div> }
-@if (error)   { <div class="error-banner"><mat-icon>error</mat-icon>{{ error }}</div> }
+@if (loading) { <nep-loading-state message="Loading channel health…" /> }
+@if (error)   { <div class="error-banner" role="alert"><mat-icon>error_outline</mat-icon>{{ error }}</div> }
 
+@if (!loading && !error && !channels.length) {
+  <nep-empty-state icon="cell_tower" message="No channel health data available." />
+}
+
+@if (!loading && !error) {
 <div class="channel-grid">
   @for (ch of channels; track ch.channel) {
     <mat-card class="channel-card status-{{ ch.status.toLowerCase() }}">
@@ -56,3 +59,4 @@
     </mat-card>
   }
 </div>
+}

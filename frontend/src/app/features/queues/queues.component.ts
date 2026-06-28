@@ -3,25 +3,30 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { QueuesService, Queue } from './queues.service';
+import { PageHeaderComponent, LoadingStateComponent, EmptyStateComponent } from '../../shared';
 
 @Component({
   selector: 'nep-queues',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    CommonModule, MatCardModule, MatTableModule, MatIconModule,
+    PageHeaderComponent, LoadingStateComponent, EmptyStateComponent,
+  ],
   templateUrl: './queues.component.html',
   styleUrl: './queues.component.scss',
 })
 export class QueuesComponent implements OnInit {
   private svc = inject(QueuesService);
   loading = true; error = ''; queues: Queue[] = [];
-  columns = ['name', 'channel', 'currentDepth', 'capacity', 'fillPct', 'drainRate', 'oldestMessageMs', 'status'];
+  columns = ['name', 'channel', 'depthCapacity', 'fillPct', 'drainRate', 'oldestMessage', 'status'];
 
   ngOnInit() {
+    this.loading = true;
+    this.error = '';
     this.svc.getAll().subscribe({
-      next:  (data) => { this.queues = data; this.loading = false; },
-      error: (err)  => { this.error = err?.error?.error?.message ?? 'Failed to load queues'; this.loading = false; },
+      next:  (data) => { this.queues = data; this.error = ''; this.loading = false; },
+      error: (err)  => { this.queues = []; this.error = err?.error?.error?.message ?? 'Failed to load queues'; this.loading = false; },
     });
   }
 

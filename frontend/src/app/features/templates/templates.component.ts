@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
 import { TemplatesService, Template } from './templates.service';
+import { PageHeaderComponent, LoadingStateComponent, EmptyStateComponent } from '../../shared';
 
 @Component({
   selector: 'nep-templates',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule, MatProgressSpinnerModule, MatChipsModule],
+  imports: [
+    CommonModule, MatCardModule, MatTableModule, MatIconModule,
+    PageHeaderComponent, LoadingStateComponent, EmptyStateComponent,
+  ],
   templateUrl: './templates.component.html',
   styleUrl: './templates.component.scss',
 })

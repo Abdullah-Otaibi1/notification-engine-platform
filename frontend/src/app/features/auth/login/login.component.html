@@ -43,6 +43,9 @@
           <mat-label>Username</mat-label>
           <mat-icon matPrefix>person_outline</mat-icon>
           <input matInput formControlName="username" autocomplete="username" placeholder="Enter your username" />
+          @if (form.controls.username.hasError('required')) {
+            <mat-error>Username is required</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-field">
@@ -50,9 +53,13 @@
           <mat-icon matPrefix>lock_outline</mat-icon>
           <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'"
                  autocomplete="current-password" placeholder="Enter your password" />
-          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword"
+                  [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
+          @if (form.controls.password.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+          }
         </mat-form-field>
 
         <button mat-flat-button class="sign-in-btn" type="submit" [disabled]="loading || form.invalid">
@@ -69,14 +76,6 @@
           }
         </button>
       </form>
-
-      <div class="credentials-hint">
-        <mat-icon>info_outline</mat-icon>
-        <div>
-          <strong>Demo credentials:</strong>
-          admin&nbsp;/&nbsp;Admin&#64;1234 &nbsp;·&nbsp; ops&nbsp;/&nbsp;Ops&#64;1234
-        </div>
-      </div>
 
     </div>
   </div>

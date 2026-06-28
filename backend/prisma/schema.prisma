@@ -142,6 +142,8 @@ model Notification {
   @@index([requestId])
   @@index([businessReference])
   @@index([createdAt])
+  @@index([providerId])
+  @@index([consumerChannelId])
   @@map("notifications")
 }
 

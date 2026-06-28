@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -79,6 +80,7 @@ export const routes: Routes = [
       },
       {
         path: 'audit',
+        canActivate: [roleGuard(['Admin', 'Auditor'])],
         loadComponent: () => import('./features/audit/audit.component').then((m) => m.AuditComponent),
         title: 'Audit Logs',
       },

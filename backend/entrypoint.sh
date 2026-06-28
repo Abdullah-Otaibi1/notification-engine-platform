@@ -41,23 +41,42 @@ echo "      Database is reachable."
 echo ""
 
 # ------------------------------------
-# Apply Prisma schema (db push)
-# --accept-data-loss prevents the CLI
-# from aborting in non-interactive mode
+# Apply Prisma migrations (versioned).
+# Uses `migrate deploy` (never destructive).
+# If the DB already has the schema but no
+# migration history (legacy `db push`
+# deploys), baseline the initial migration
+# so deploy does not fail (Prisma P3005).
 # ------------------------------------
-echo "[2/3] Applying Prisma schema (db push)..."
-npx prisma db push --accept-data-loss
-echo "      Schema applied."
+echo "[2/3] Applying Prisma migrations (migrate deploy)..."
+if ! npx prisma migrate deploy 2>/tmp/migrate.log; then
+  if grep -q "P3005" /tmp/migrate.log; then
+    echo "      Existing non-empty schema detected — baselining 0_init..."
+    npx prisma migrate resolve --applied 0_init
+    npx prisma migrate deploy
+  else
+    echo "ERROR: prisma migrate deploy failed:"
+    cat /tmp/migrate.log
+    exit 1
+  fi
+fi
+echo "      Migrations applied."
 echo ""
 
 # ------------------------------------
-# Seed initial data
-# seed.ts has built-in guards: it skips
-# large data sets if they already exist
+# Seed initial data (OPT-IN).
+# Disabled by default in production so demo
+# users/credentials are never created
+# automatically. Enable explicitly with
+# RUN_SEED=true (e.g. first bootstrap / dev).
 # ------------------------------------
-echo "[3/3] Running database seed..."
-npx prisma db seed
-echo "      Seed complete."
+if [ "${RUN_SEED}" = "true" ]; then
+  echo "[3/3] RUN_SEED=true — running database seed..."
+  npx prisma db seed
+  echo "      Seed complete."
+else
+  echo "[3/3] Skipping seed (set RUN_SEED=true to enable)."
+fi
 echo ""
 
 # ------------------------------------

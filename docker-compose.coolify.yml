@@ -51,7 +51,16 @@ services:
       DB_PORT: "5432"
       JWT_SECRET: ${SERVICE_HEX_64_JWT}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
-      CORS_ORIGIN: ${APP_ORIGIN:-http://134.122.69.38}
+      # Same-origin via the nginx proxy in production, so CORS is typically
+      # irrelevant. Set CORS_ORIGIN in Coolify only for split-domain/direct API
+      # access (comma-separated allow-list). No hardcoded infra IP fallback.
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+      # Seeding is opt-in. Set RUN_SEED=true (+ SEED_*_PASSWORD) for first bootstrap.
+      RUN_SEED: ${RUN_SEED:-false}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      SEED_OPS_PASSWORD: ${SEED_OPS_PASSWORD:-}
+      SEED_AUDITOR_PASSWORD: ${SEED_AUDITOR_PASSWORD:-}
+      SEED_VIEWER_PASSWORD: ${SEED_VIEWER_PASSWORD:-}
     expose:
       - "3000"
     depends_on:
@@ -63,7 +72,7 @@ services:
         - node
         - -e
         - >-
-          fetch('http://127.0.0.1:3000/api/docs')
+          fetch('http://127.0.0.1:3000/api/health')
           .then((response) => process.exit(response.status < 500 ? 0 : 1))
           .catch(() => process.exit(1))
       interval: 15s

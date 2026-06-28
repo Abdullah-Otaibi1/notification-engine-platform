@@ -10,12 +10,24 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  // A real bcrypt hash (same cost factor as stored passwords) used to spend
+  // roughly the same time hashing when a user does not exist, so login timing
+  // does not leak whether a username is valid.
+  private static readonly DUMMY_HASH = bcrypt.hashSync('invalid-password', 12);
+
   async validateUser(username: string, password: string) {
     const user = await this.prisma.user.findUnique({ where: { username } });
-    if (!user || !user.isActive) throw new UnauthorizedException('Invalid credentials');
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
+    // Always run a bcrypt comparison (against a dummy hash when the user is
+    // missing) to keep the response time constant.
+    const isMatch = await bcrypt.compare(
+      password,
+      user?.passwordHash ?? AuthService.DUMMY_HASH,
+    );
+
+    if (!user || !user.isActive || !isMatch) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     const { passwordHash: _, ...result } = user;
     return result;

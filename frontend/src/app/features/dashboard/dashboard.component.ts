@@ -1,22 +1,23 @@
 ﻿import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { interval, Subscription, forkJoin } from 'rxjs';
 import { switchMap, startWith } from 'rxjs/operators';
 import { DashboardService, DashboardSummary, ChartData } from './dashboard.service';
+import { PageHeaderComponent, LoadingStateComponent, StatCardComponent } from '../../shared';
 
 @Component({
   selector: 'nep-dashboard',
   standalone: true,
   imports: [
-    CommonModule, DecimalPipe, DatePipe,
-    MatCardModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule, MatTooltipModule,
+    CommonModule, DatePipe,
+    MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule,
     NgApexchartsModule,
+    PageHeaderComponent, LoadingStateComponent, StatCardComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -49,16 +50,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   providerOptions: any  = null;
 
   ngOnInit() {
+    this.error = '';
     this.sub = interval(30_000).pipe(startWith(0), switchMap(() =>
       forkJoin({ summary: this.svc.getSummary(), charts: this.svc.getCharts() })
     )).subscribe({
       next: ({ summary, charts }) => {
         this.summary = summary;
         this.charts  = charts;
+        this.error   = '';
         this.loading = false;
         this.buildCharts(charts);
       },
       error: (err) => {
+        this.summary = null;
+        this.charts  = null;
         this.error   = err?.error?.error?.message ?? 'Failed to load dashboard data';
         this.loading = false;
       },
@@ -144,5 +149,5 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
   }
 
-  refresh() { this.sub?.unsubscribe(); this.ngOnInit(); }
+  refresh() { this.sub?.unsubscribe(); this.loading = true; this.ngOnInit(); }
 }

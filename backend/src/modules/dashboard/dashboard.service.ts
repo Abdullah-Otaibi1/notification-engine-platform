@@ -1,6 +1,6 @@
 ﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { NotificationStatus } from '@prisma/client';
+import { NotificationStatus, Prisma } from '@prisma/client';
 
 const SUCCESS_STATUSES  = [NotificationStatus.NE_SUCCESS, NotificationStatus.NE_SENT] as const;
 const FAILURE_STATUSES  = [NotificationStatus.NE_FAILED, NotificationStatus.NE_PARTIALLY_FAILED] as const;
@@ -46,13 +46,16 @@ export class DashboardService {
   async getCharts() {
     const now         = new Date();
     const sevenAgo    = new Date(now.getTime() - 7 * 86_400_000);
-    const thirtyAgo   = new Date(now.getTime() - 30 * 86_400_000);
 
-    const [recent, channelGroups, providers, successCount, failureCount, total] = await Promise.all([
-      this.prisma.notification.findMany({
-        where:  { createdAt: { gte: sevenAgo } },
-        select: { createdAt: true, status: true },
-      }),
+    const [trendRows, channelGroups, providers, successCount, failureCount, total] = await Promise.all([
+      // Aggregate the 7-day trend in SQL (one row per day/status) instead of
+      // loading every notification into Node — keeps memory flat at scale.
+      this.prisma.$queryRaw<Array<{ day: Date; status: NotificationStatus; count: number }>>(Prisma.sql`
+        SELECT date_trunc('day', "createdAt") AS day, status, COUNT(*)::int AS count
+        FROM notifications
+        WHERE "createdAt" >= ${sevenAgo}
+        GROUP BY 1, 2
+      `),
       this.prisma.notification.groupBy({ by: ['channel'], _count: { channel: true } }),
       this.prisma.provider.findMany({
         where:  { isEnabled: true },
@@ -71,12 +74,13 @@ export class DashboardService {
       const key = d.toISOString().split('T')[0];
       buckets[key] = { date: key, success: 0, failure: 0, total: 0 };
     }
-    for (const n of recent) {
-      const key = n.createdAt.toISOString().split('T')[0];
-      if (buckets[key]) {
-        buckets[key].total++;
-        if ((SUCCESS_STATUSES as readonly string[]).includes(n.status)) buckets[key].success++;
-        if ((FAILURE_STATUSES as readonly string[]).includes(n.status)) buckets[key].failure++;
+    for (const row of trendRows) {
+      const key = new Date(row.day).toISOString().split('T')[0];
+      const bucket = buckets[key];
+      if (bucket) {
+        bucket.total += row.count;
+        if ((SUCCESS_STATUSES as readonly string[]).includes(row.status)) bucket.success += row.count;
+        if ((FAILURE_STATUSES as readonly string[]).includes(row.status)) bucket.failure += row.count;
       }
     }
 

@@ -16,8 +16,26 @@ export class AuthService {
 
   readonly user     = this._user.asReadonly();
   readonly token    = this._token.asReadonly();
-  readonly isLoggedIn = computed(() => !!this._token());
+  readonly isLoggedIn = computed(() => {
+    const t = this._token();
+    return !!t && !AuthService.isExpired(t);
+  });
   readonly role       = computed(() => this._user()?.role ?? null);
+
+  private static isExpired(token: string): boolean {
+    const exp = AuthService.tokenExp(token);
+    // If we can't read an expiry, fall back to treating the token as present.
+    return exp !== null && Date.now() >= exp * 1000;
+  }
+
+  private static tokenExp(token: string): number | null {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1] ?? ''));
+      return typeof payload?.exp === 'number' ? payload.exp : null;
+    } catch {
+      return null;
+    }
+  }
 
   constructor(private http: HttpClient, private router: Router) {}
 

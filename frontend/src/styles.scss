@@ -347,6 +347,69 @@ body { background: var(--bg) !important; }
   display: inline-block;
 }
 
+// =============================================================
+// Global Utility — Tables
+// =============================================================
+.full-table { width: 100%; }
+
+// =============================================================
+// Global Utility — Channel / Language Badges
+// =============================================================
+.channel-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  &.sms   { background: rgba(8,145,178,0.1);  color: var(--c-inflight-text); }
+  &.email { background: rgba(37,99,235,0.1);   color: var(--c-info-text);    }
+  &.push  { background: rgba(124,58,237,0.1);  color: #7c3aed; }
+}
+.dark-theme .channel-badge {
+  &.sms   { color: #67e8f9; }
+  &.email { color: #60a5fa; }
+  &.push  { color: #c4b5fd; }
+}
+
+.lang-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: var(--c-neutral-bg);
+  color: var(--c-neutral-text);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.code-badge {
+  font-size: 11px;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  background: var(--c-info-bg);
+  color: var(--c-info-text);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(37,99,235,0.12);
+}
+
+// =============================================================
+// Global Utility — Placeholder Pages
+// =============================================================
+.page-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 16px;
+  opacity: 0.45;
+  color: var(--text-3);
+  mat-icon { font-size: 64px; width: 64px; height: 64px; }
+  h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text-2); }
+  p  { margin: 0; font-size: 14px; }
+}
+
 // filter card
 .filter-card {
   margin-bottom: 16px;

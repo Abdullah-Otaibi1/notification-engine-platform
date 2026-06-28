@@ -114,8 +114,8 @@ docker compose up -d --build
 
 On first start the backend container **automatically**:
 1. Waits for PostgreSQL to be ready (up to 60 s)
-2. Applies the Prisma schema — `npx prisma db push`
-3. Seeds demo data if the database is empty — `npx prisma db seed`
+2. Applies versioned migrations — `npx prisma migrate deploy` (auto-baselines legacy schemas)
+3. Seeds initial data **only when `RUN_SEED=true`** — `npx prisma db seed`
 4. Starts the NestJS application
 
 | Service    | URL                            |
@@ -135,9 +135,9 @@ Expected (first run):
 ```
 [1/3] Waiting for database at postgres:5432 ...
       Database is reachable.
-[2/3] Applying Prisma schema (db push)...
-      Schema applied.
-[3/3] Running database seed...
+[2/3] Applying Prisma migrations (migrate deploy)...
+      Migrations applied.
+[3/3] RUN_SEED=true — running database seed...
 🌱 Starting seed...
   ✔ Users seeded
   ✔ Providers seeded
@@ -167,24 +167,26 @@ On **restart** (data already present):
 | `POSTGRES_USER`     |          | `nep_user`            | Database username |
 | `POSTGRES_DB`       |          | `nep_db`              | Database name |
 | `POSTGRES_PORT`     |          | `5432`                | Host port for PostgreSQL |
-| `BACKEND_PORT`      |          | `3000`                | Host port for backend |
+| `PORT`              |          | `3000`                | Port the backend listens on |
 | `FRONTEND_PORT`     |          | `80`                  | Host port for frontend |
 | `JWT_EXPIRES_IN`    |          | `8h`                  | JWT token lifetime |
-| `CORS_ORIGIN`       |          | `http://localhost`    | Allowed CORS origin |
+| `CORS_ORIGIN`       |          | `http://localhost:4200` | Allowed CORS origin(s), comma-separated |
+| `RUN_SEED`          |          | `false`               | Set `true` (first deploy) to run the DB seed |
+| `SEED_ADMIN_PASSWORD` | when `RUN_SEED=true` |          | Initial admin password (no default in prod) |
 | `NODE_ENV`          |          | `production`          | Node environment |
 
-> `DATABASE_URL` is **auto-constructed** by `docker-compose.yml` using `postgres` (the service name). Do not override it in `.env` when using Docker Compose.
+> `DATABASE_URL` is **auto-constructed** by `docker-compose.coolify.yml` using `postgres` (the service name). Do not override it in `.env` when using Docker Compose.
 
 ---
 
 ## Manual Database Commands
 
 ```bash
-# Re-apply schema (safe, idempotent)
-docker exec -it nep-backend npx prisma db push
+# Apply pending migrations (versioned, never destructive)
+docker exec -it nep-backend npx prisma migrate deploy
 
-# Re-run seed (upserts users/providers; skips bulk data if already present)
-docker exec -it nep-backend npx prisma db seed
+# Re-run seed (opt-in; requires SEED_*_PASSWORD env in production)
+docker exec -it -e RUN_SEED=true nep-backend npx prisma db seed
 
 # Open Prisma Studio (GUI schema/data browser)
 docker exec -it nep-backend npx prisma studio
@@ -204,8 +206,8 @@ npm install
 # DATABASE_URL=postgresql://nep_user:<password>@localhost:5432/nep_db?schema=public
 cp ../.env.example .env
 
-npx prisma db push
-npx prisma db seed
+npx prisma migrate deploy
+RUN_SEED=true npx prisma db seed
 npm run start:dev
 ```
 
@@ -273,7 +275,7 @@ notification-engine-platform/
 │   │   └── seed.ts
 │   └── Dockerfile
 │
-├── docker-compose.yml
+├── docker-compose.coolify.yml
 ├── .env.example
 └── README.md
 ```
@@ -289,32 +291,34 @@ The backend `entrypoint.sh` handles **zero-touch database setup** on every conta
 ```
 container start
   └─► wait for postgres
-  └─► npx prisma db push       ← applies schema changes (safe, no data loss)
-  └─► npx prisma db seed       ← seeds data only if database is empty
-  └─► exec node dist/main      ← starts NestJS (PID 1)
+  └─► npx prisma migrate deploy  ← applies versioned migrations (never destructive;
+                                    auto-baselines legacy db-push schemas)
+  └─► npx prisma db seed         ← ONLY when RUN_SEED=true (off by default in prod)
+  └─► exec node dist/main        ← starts NestJS (PID 1)
 ```
 
 ### First Deployment Steps
 
 1. **Push code** to your Git repository (GitHub / GitLab / Gitea)
 2. **In Coolify** → New Resource → Docker Compose
-3. Select your repository and set the **Docker Compose file** to `docker-compose.yml`
+3. Select your repository and set the **Docker Compose file** to `docker-compose.coolify.yml`
 4. **Set environment variables** (copy from `.env.example`):
    | Variable         | Required | Example                          |
    |------------------|----------|----------------------------------|
    | `POSTGRES_PASSWORD` | ✅    | `change_me_in_prod`              |
-   | `JWT_SECRET`     | ✅       | `$(openssl rand -hex 32)`        |
-   | `BACKEND_PORT`   | optional | `3000`                           |
+   | `JWT_SECRET`     | ✅       | `$(openssl rand -hex 32)` (≥32 chars) |
+   | `PORT`           | optional | `3000`                           |
    | `FRONTEND_PORT`  | optional | `80`                             |
+   | `RUN_SEED`       | first deploy | `true` (then remove)         |
+   | `SEED_ADMIN_PASSWORD` | if seeding | strong password             |
 5. **Deploy** — Coolify builds images and starts containers
 6. Database is auto-prepared on first start (no manual steps needed)
 
 ### Re-deployment / Updates
 
 Just push new code and redeploy. The entrypoint is idempotent:
-- Schema changes are applied via `db push`
-- Bulk data (notifications, alerts, SLA) is **skipped** if already present
-- Users and providers are **upserted** (safe to update credentials/config)
+- Schema changes are applied via `prisma migrate deploy` (versioned, non-destructive)
+- Seeding only runs when `RUN_SEED=true` (off by default, so redeploys don't touch data)
 
 ### Rollback / Reset
 

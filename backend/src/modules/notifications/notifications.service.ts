@@ -70,7 +70,7 @@ export class NotificationsService {
       include: {
         provider:        { select: { id: true, name: true, channel: true } },
         consumerChannel: { select: { id: true, name: true } },
-        statusHistory:   { orderBy: { createdAt: 'asc' } },
+        statusHistory:   { orderBy: { createdAt: 'asc' }, take: 100 },
         retryAttempts:   { orderBy: { createdAt: 'desc' }, take: 10 },
       },
     });

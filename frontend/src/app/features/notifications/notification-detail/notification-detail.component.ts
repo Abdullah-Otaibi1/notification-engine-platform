@@ -3,18 +3,21 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotificationsService } from '../notifications.service';
 import { NotificationDetail } from '../../../core/models/notification.model';
+import { LoadingStateComponent } from '../../../shared';
 
 @Component({
   selector: 'nep-notification-detail',
   standalone: true,
-  imports: [CommonModule, DatePipe, MatCardModule, MatIconModule,
-    MatProgressSpinnerModule, MatButtonModule, MatChipsModule, MatDividerModule],
+  imports: [
+    CommonModule, DatePipe, MatCardModule, MatIconModule,
+    MatButtonModule, MatDividerModule, MatTooltipModule,
+    LoadingStateComponent,
+  ],
   templateUrl: './notification-detail.component.html',
   styleUrl: './notification-detail.component.scss',
 })
@@ -28,9 +31,11 @@ export class NotificationDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
+    this.loading = true;
+    this.error = '';
     this.svc.getOne(id).subscribe({
-      next:  (data) => { this.notification = data; this.loading = false; },
-      error: (err)  => { this.error = err?.error?.error?.message ?? 'Notification not found'; this.loading = false; },
+      next:  (data) => { this.notification = data; this.error = ''; this.loading = false; },
+      error: (err)  => { this.notification = null; this.error = err?.error?.error?.message ?? 'Notification not found'; this.loading = false; },
     });
   }
 

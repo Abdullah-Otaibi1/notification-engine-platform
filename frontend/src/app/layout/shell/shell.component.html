@@ -1,7 +1,11 @@
 <mat-sidenav-container class="shell-container">
 
   <!-- ====== Sidebar ====== -->
-  <mat-sidenav mode="side" opened class="sidenav">
+  <mat-sidenav
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="isMobile() ? sidenavOpen() : true"
+    class="sidenav"
+    (closedStart)="sidenavOpen.set(false)">
 
     <!-- Logo Header -->
     <div class="nav-header">
@@ -19,9 +23,11 @@
       <div class="nav-section-label">MONITORING</div>
       <nav class="nav-list">
         @for (item of navItems.slice(0,4); track item.route) {
-          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active">
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active"
+             (click)="closeSidenavOnMobile()">
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
             <span class="nav-label">{{ item.label }}</span>
+            @if (item.preview) { <span class="nav-soon">Soon</span> }
           </a>
         }
       </nav>
@@ -29,9 +35,11 @@
       <div class="nav-section-label">CONFIGURATION</div>
       <nav class="nav-list">
         @for (item of navItems.slice(4,9); track item.route) {
-          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active">
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active"
+             (click)="closeSidenavOnMobile()">
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
             <span class="nav-label">{{ item.label }}</span>
+            @if (item.preview) { <span class="nav-soon">Soon</span> }
           </a>
         }
       </nav>
@@ -39,9 +47,11 @@
       <div class="nav-section-label">OPERATIONS</div>
       <nav class="nav-list">
         @for (item of navItems.slice(9); track item.route) {
-          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active">
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active"
+             (click)="closeSidenavOnMobile()">
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
             <span class="nav-label">{{ item.label }}</span>
+            @if (item.preview) { <span class="nav-soon">Soon</span> }
           </a>
         }
       </nav>
@@ -57,7 +67,7 @@
           <span class="user-name">{{ user.displayName }}</span>
           <span class="user-role">{{ user.role }}</span>
         </div>
-        <button mat-icon-button class="logout-btn" (click)="auth.logout()" title="Logout">
+        <button mat-icon-button class="logout-btn" (click)="auth.logout()" matTooltip="Sign out">
           <mat-icon>logout</mat-icon>
         </button>
       </div>
@@ -70,12 +80,16 @@
     <!-- Top Bar -->
     <mat-toolbar class="app-toolbar">
       <div class="toolbar-left">
-        <!-- Breadcrumb placeholder; add real breadcrumb service if needed -->
+        @if (isMobile()) {
+          <button mat-icon-button class="toolbar-btn" (click)="toggleSidenav()" aria-label="Toggle navigation">
+            <mat-icon>menu</mat-icon>
+          </button>
+        }
       </div>
       <div class="toolbar-right">
         <button mat-icon-button class="toolbar-btn"
                 (click)="theme.toggle()"
-                [title]="theme.mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+                [matTooltip]="theme.mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
           <mat-icon>{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
 

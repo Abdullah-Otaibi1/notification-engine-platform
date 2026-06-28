@@ -15,8 +15,8 @@
     }
   </div>
 
-  @if (loading) { <div class="loading-center"><mat-spinner diameter="44" /><span>Loading notification…</span></div> }
-  @if (error)   { <div class="error-banner"><mat-icon>error</mat-icon>{{ error }}</div> }
+  @if (loading) { <nep-loading-state [diameter]="44" message="Loading notification…" /> }
+  @if (error)   { <div class="error-banner" role="alert"><mat-icon>error_outline</mat-icon>{{ error }}</div> }
 
   @if (!loading && notification) {
     <div class="detail-layout">
