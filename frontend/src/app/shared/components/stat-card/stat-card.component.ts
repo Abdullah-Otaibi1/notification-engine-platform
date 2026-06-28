@@ -7,64 +7,34 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [NgStyle, DecimalPipe, MatIconModule],
   template: `
-    <div class="kpi-card" [style.--accent]="color">
-      <div class="kpi-accent-line" [style.background]="color"></div>
-      <div class="kpi-icon" [ngStyle]="{ background: color + '18', color: color }">
-        <mat-icon>{{ icon }}</mat-icon>
-      </div>
-      <div class="kpi-body">
-        <div class="kpi-value">{{ value | number:'1.0-1' }}{{ suffix }}</div>
-        <div class="kpi-label">{{ label }}</div>
+    <div class="group relative bg-white rounded-2xl overflow-hidden border border-slate-100
+                flex flex-col cursor-default select-none
+                transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:border-slate-200"
+         style="box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 24px rgba(15,23,42,0.06)">
+      <!-- Colored top strip -->
+      <div class="h-[3px] w-full shrink-0" [style.background]="'linear-gradient(to right,' + color + ',' + color + 'aa)'"></div>
+      <!-- Body -->
+      <div class="p-5 flex items-start gap-4 flex-1">
+        <!-- Icon circle -->
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105"
+             [ngStyle]="{ background: color + '14' }">
+          <mat-icon class="!text-[22px] !w-[22px] !h-[22px] transition-colors" [style.color]="color">{{ icon }}</mat-icon>
+        </div>
+        <!-- Number + label -->
+        <div class="flex-1 min-w-0 pt-0.5">
+          <div class="font-['DM_Sans'] text-[28px] font-extrabold text-slate-900 tracking-tight leading-none tabular-nums">
+            {{ value | number:'1.0-1' }}<span class="text-lg font-bold" [style.color]="color">{{ suffix }}</span>
+          </div>
+          <div class="mt-1.5 text-[11.5px] font-semibold text-slate-400 tracking-wide uppercase">{{ label }}</div>
+        </div>
       </div>
     </div>
   `,
-  styles: [`
-    :host { display: block; }
-    .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      box-shadow: var(--card-shadow);
-      padding: 18px 20px 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      position: relative;
-      overflow: hidden;
-      transition: box-shadow 0.2s, transform 0.15s;
-      &:hover {
-        box-shadow: var(--card-hover);
-        transform: translateY(-1px);
-      }
-    }
-    .kpi-accent-line {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      opacity: 0.8;
-    }
-    .kpi-icon {
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      mat-icon { font-size: 22px; width: 22px; height: 22px; }
-    }
-    .kpi-body { flex: 1; min-width: 0; padding-top: 2px; }
-    .kpi-value {
-      font-size: 26px; font-weight: 800;
-      color: var(--text); letter-spacing: -0.5px; line-height: 1.1;
-    }
-    .kpi-label {
-      font-size: 12px; color: var(--text-3);
-      margin-top: 4px; font-weight: 500; letter-spacing: 0.02em;
-    }
-  `],
 })
 export class StatCardComponent {
   @Input() icon = 'analytics';
   @Input() label = '';
   @Input() value: number = 0;
   @Input() suffix = '';
-  @Input() color = '#2563eb';
+  @Input() color = '#0d9488';
 }

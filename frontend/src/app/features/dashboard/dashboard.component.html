@@ -1,11 +1,11 @@
 ﻿<nep-page-header title="Operations Dashboard" subtitle="Notification engine health and delivery metrics">
   @if (summary) {
-    <span class="last-updated">
-      <mat-icon>schedule</mat-icon>
-      Updated {{ summary.lastUpdated | date:'HH:mm:ss' }}
+    <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 px-2.5 py-1 rounded-full border border-slate-200 bg-white">
+      <mat-icon class="!text-[13px] !w-3.5 !h-3.5">schedule</mat-icon>
+      {{ summary.lastUpdated | date:'HH:mm:ss' }}
     </span>
   }
-  <button mat-icon-button (click)="refresh()" matTooltip="Refresh now">
+  <button mat-icon-button (click)="refresh()" matTooltip="Refresh" class="text-slate-400 hover:text-teal-600 transition-colors">
     <mat-icon>refresh</mat-icon>
   </button>
 </nep-page-header>
@@ -13,14 +13,15 @@
 @if (loading) { <nep-loading-state [diameter]="44" message="Loading dashboard…" /> }
 
 @if (error) {
-  <div class="error-banner" role="alert">
-    <mat-icon>error_outline</mat-icon> {{ error }}
+  <div class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-5 text-sm border border-rose-200 bg-rose-50 text-rose-700" role="alert">
+    <mat-icon class="!text-[18px] !w-[18px] !h-[18px] shrink-0">error_outline</mat-icon>
+    <span>{{ error }}</span>
   </div>
 }
 
 @if (!loading && summary) {
   <!-- KPI Grid -->
-  <div class="kpi-grid">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
     @for (card of kpiCards; track card.key) {
       <nep-stat-card
         [icon]="card.icon"
@@ -33,15 +34,17 @@
 
   <!-- Charts Grid -->
   @if (charts) {
-    <div class="charts-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
       <!-- 7-Day Trend (wide) -->
-      <div class="chart-card wide">
-        <div class="chart-header">
+      <div class="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+           style="box-shadow:0 1px 3px rgba(15,23,42,0.05),0 4px 16px rgba(15,23,42,0.06)">
+        <div class="flex items-start justify-between mb-4">
           <div>
-            <h3>Notification Trend</h3>
-            <p>Last 7 days — success, failure, total</p>
+            <h3 class="m-0 text-[14px] font-bold text-slate-900 tracking-tight">Notification Trend</h3>
+            <p class="mt-0.5 m-0 text-[12px] text-slate-400 font-medium">Last 7 days — success, failure, total</p>
           </div>
+          <div class="w-2 h-2 rounded-full bg-teal-400 mt-1.5 shrink-0" style="box-shadow:0 0 6px rgba(45,212,191,0.6)"></div>
         </div>
         <apx-chart
           [series]="trendOptions.series"
@@ -57,9 +60,13 @@
       </div>
 
       <!-- Success vs Failure Donut -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <div><h3>Outcome Split</h3><p>Overall success vs failure</p></div>
+      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+           style="box-shadow:0 1px 3px rgba(15,23,42,0.05),0 4px 16px rgba(15,23,42,0.06)">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="m-0 text-[14px] font-bold text-slate-900 tracking-tight">Outcome Split</h3>
+            <p class="mt-0.5 m-0 text-[12px] text-slate-400 font-medium">Overall success vs failure</p>
+          </div>
         </div>
         <apx-chart
           [series]="donutOptions.series"
@@ -73,9 +80,13 @@
       </div>
 
       <!-- Channel Distribution -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <div><h3>Channel Volume</h3><p>Notifications per channel</p></div>
+      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+           style="box-shadow:0 1px 3px rgba(15,23,42,0.05),0 4px 16px rgba(15,23,42,0.06)">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="m-0 text-[14px] font-bold text-slate-900 tracking-tight">Channel Volume</h3>
+            <p class="mt-0.5 m-0 text-[12px] text-slate-400 font-medium">Notifications per channel</p>
+          </div>
         </div>
         <apx-chart
           [series]="channelOptions.series"
@@ -90,9 +101,13 @@
       </div>
 
       <!-- Provider Success Rate (wide) -->
-      <div class="chart-card wide">
-        <div class="chart-header">
-          <div><h3>Provider Success Rate</h3><p>Delivery success % per provider</p></div>
+      <div class="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+           style="box-shadow:0 1px 3px rgba(15,23,42,0.05),0 4px 16px rgba(15,23,42,0.06)">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="m-0 text-[14px] font-bold text-slate-900 tracking-tight">Provider Success Rate</h3>
+            <p class="mt-0.5 m-0 text-[12px] text-slate-400 font-medium">Delivery success % per provider</p>
+          </div>
         </div>
         <apx-chart
           [series]="providerOptions.series"

@@ -65,10 +65,22 @@ export class NotificationsComponent implements OnInit {
 
   openDetail(row: NotificationRow) { this.router.navigate(['/notifications', row.id]); }
 
-  statusClass(s: string) {
-    if (['NE_SUCCESS','NE_SENT'].includes(s))             return 'success';
-    if (['NE_FAILED','NE_PARTIALLY_FAILED'].includes(s))  return 'failure';
-    if (['NE_RETRY','NE_SENDING','NE_PROCESSING','NE_UNDER_PROCESSING','NE_ROUTED'].includes(s)) return 'inflight';
-    return 'pending';
+  private readonly CHIP_BASE = 'inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-full text-[10.5px] font-semibold whitespace-nowrap border tracking-wide';
+  private readonly BADGE_BASE = 'inline-block px-2 py-[2px] rounded-md text-[10.5px] font-bold tracking-[0.06em] border';
+
+  statusChipClass(s: string): string {
+    if (['NE_SUCCESS','NE_SENT'].includes(s))             return `${this.CHIP_BASE} bg-emerald-50 text-emerald-700 border-emerald-200`;
+    if (['NE_FAILED','NE_PARTIALLY_FAILED'].includes(s))  return `${this.CHIP_BASE} bg-rose-50 text-rose-700 border-rose-200`;
+    if (['NE_RETRY','NE_SENDING','NE_PROCESSING','NE_UNDER_PROCESSING','NE_ROUTED'].includes(s)) return `${this.CHIP_BASE} bg-teal-50 text-teal-700 border-teal-200`;
+    return `${this.CHIP_BASE} bg-amber-50 text-amber-700 border-amber-200`;
+  }
+
+  channelBadgeClass(c: string): string {
+    const map: Record<string,string> = {
+      sms:   `${this.BADGE_BASE} bg-sky-50 text-sky-700 border-sky-200`,
+      email: `${this.BADGE_BASE} bg-teal-50 text-teal-700 border-teal-200`,
+      push:  `${this.BADGE_BASE} bg-violet-50 text-violet-700 border-violet-200`,
+    };
+    return map[c.toLowerCase()] ?? `${this.BADGE_BASE} bg-slate-50 text-slate-600 border-slate-200`;
   }
 }

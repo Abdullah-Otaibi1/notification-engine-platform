@@ -6,9 +6,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   standalone: true,
   imports: [MatProgressSpinnerModule],
   template: `
-    <div class="loading-center">
+    <div class="flex flex-col items-center justify-center py-20 gap-5">
       <mat-spinner [diameter]="diameter" />
-      <span>{{ message }}</span>
+      <span class="text-sm font-medium text-slate-400 tracking-wide">{{ message }}</span>
     </div>
   `,
 })

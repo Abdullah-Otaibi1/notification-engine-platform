@@ -1,45 +1,75 @@
-<div class="login-root">
+<div class="flex h-screen overflow-hidden">
 
-  <!-- Left Panel – Branding -->
-  <div class="brand-panel">
-    <div class="brand-content">
-      <div class="brand-logo">
-        <mat-icon>notifications_active</mat-icon>
+  <!-- Left Panel — Branding -->
+  <div class="w-[420px] shrink-0 relative flex flex-col overflow-hidden hidden md:flex"
+       style="background:linear-gradient(160deg,#070e1d 0%,#0d1929 40%,#0a1f35 100%)">
+    <!-- Subtle dot grid -->
+    <div class="absolute inset-0 pointer-events-none"
+         style="background-image:radial-gradient(rgba(255,255,255,0.04) 1px,transparent 1px);background-size:28px 28px"></div>
+    <!-- Teal glow orb -->
+    <div class="absolute w-[500px] h-[500px] rounded-full pointer-events-none"
+         style="background:radial-gradient(circle,rgba(13,148,136,0.2) 0%,transparent 65%);top:-120px;left:-100px"></div>
+    <!-- Secondary amber glow -->
+    <div class="absolute w-[300px] h-[300px] rounded-full pointer-events-none"
+         style="background:radial-gradient(circle,rgba(245,158,11,0.08) 0%,transparent 65%);bottom:60px;right:-60px"></div>
+
+    <div class="flex-1 flex flex-col justify-center px-12 relative z-10">
+      <!-- Logo -->
+      <div class="relative w-[60px] h-[60px] rounded-2xl flex items-center justify-center mb-8 shrink-0"
+           style="background:linear-gradient(135deg,#0d9488,#14b8a6)">
+        <mat-icon class="!text-[28px] !w-7 !h-7 text-white relative z-10">notifications_active</mat-icon>
+        <div class="absolute inset-0 rounded-2xl"
+             style="box-shadow:0 8px 32px rgba(13,148,136,0.5)"></div>
       </div>
-      <h1>Notification Engine</h1>
-      <p>Enterprise Operations &amp; Monitoring Platform</p>
+      <h1 class="m-0 mb-2 text-[28px] font-extrabold tracking-tight leading-tight" style="color:#f0f6ff">
+        Notification Engine
+      </h1>
+      <p class="m-0 mb-10 text-[14px] leading-relaxed font-medium" style="color:rgba(148,163,184,0.8)">
+        Enterprise Operations &amp; Monitoring Platform
+      </p>
 
-      <div class="brand-features">
-        <div class="feature-item"><mat-icon>speed</mat-icon><span>Real-time monitoring</span></div>
-        <div class="feature-item"><mat-icon>manage_search</mat-icon><span>Notification tracing</span></div>
-        <div class="feature-item"><mat-icon>notifications_active</mat-icon><span>Multi-channel delivery</span></div>
-        <div class="feature-item"><mat-icon>policy</mat-icon><span>Audit &amp; compliance</span></div>
+      <div class="flex flex-col gap-4">
+        @for (feat of features; track feat.label) {
+          <div class="flex items-center gap-3 text-[13px] font-medium" style="color:rgba(148,163,184,0.8)">
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                 style="background:rgba(13,148,136,0.15)">
+              <mat-icon class="!text-[15px] !w-4 !h-4" style="color:#2dd4bf">{{ feat.icon }}</mat-icon>
+            </div>
+            <span>{{ feat.label }}</span>
+          </div>
+        }
       </div>
     </div>
-    <div class="brand-footer">© 2026 Notification Engine Platform</div>
+
+    <div class="px-12 py-5 text-[11px] font-medium border-t border-white/[0.06] relative z-10"
+         style="color:rgba(100,116,139,0.6)">
+      &copy; 2026 Notification Engine Platform
+    </div>
   </div>
 
-  <!-- Right Panel – Login Form -->
-  <div class="form-panel">
-    <div class="form-card">
+  <!-- Right Panel — Login Form -->
+  <div class="flex-1 flex items-center justify-center p-8 overflow-y-auto" style="background:#f4f7fa">
+    <div class="w-full max-w-[400px] bg-white rounded-2xl p-10 border border-slate-200/80"
+         style="box-shadow:0 2px 4px rgba(15,23,42,0.04),0 8px 32px rgba(15,23,42,0.08)">
 
-      <div class="form-header">
-        <div class="form-logo">
-          <mat-icon>lock_open</mat-icon>
+      <div class="text-center mb-8">
+        <div class="w-[54px] h-[54px] rounded-xl flex items-center justify-center mx-auto mb-5 border border-teal-100"
+             style="background:linear-gradient(135deg,rgba(13,148,136,0.08),rgba(13,148,136,0.04))">
+          <mat-icon class="!text-2xl !w-6 !h-6 text-teal-600">lock_open</mat-icon>
         </div>
-        <h2>Welcome back</h2>
-        <p>Sign in to your account to continue</p>
+        <h2 class="m-0 mb-1.5 text-[22px] font-extrabold text-slate-900 tracking-tight">Welcome back</h2>
+        <p class="m-0 text-[13px] text-slate-400 font-medium">Sign in to your account to continue</p>
       </div>
 
       @if (error) {
-        <div class="form-error">
-          <mat-icon>error_outline</mat-icon>
+        <div class="flex items-center gap-2.5 px-3.5 py-3 rounded-xl mb-5 text-[13px] font-medium border border-rose-200 bg-rose-50 text-rose-700">
+          <mat-icon class="!text-[16px] !w-4 !h-4 shrink-0">error_outline</mat-icon>
           <span>{{ error }}</span>
         </div>
       }
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
-        <mat-form-field appearance="outline" class="full-field">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-1">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Username</mat-label>
           <mat-icon matPrefix>person_outline</mat-icon>
           <input matInput formControlName="username" autocomplete="username" placeholder="Enter your username" />
@@ -48,7 +78,7 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-field">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Password</mat-label>
           <mat-icon matPrefix>lock_outline</mat-icon>
           <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'"
@@ -62,15 +92,15 @@
           }
         </mat-form-field>
 
-        <button mat-flat-button class="sign-in-btn" type="submit" [disabled]="loading || form.invalid">
+        <button mat-flat-button type="submit" [disabled]="loading || form.invalid"
+                class="w-full !h-12 !rounded-xl !mt-3 !text-sm !font-bold !tracking-wide !text-white"
+                style="background:linear-gradient(135deg,#0d9488,#0f766e) !important;box-shadow:0 4px 16px rgba(13,148,136,0.35) !important">
           @if (loading) {
-            <ng-container>
-              <mat-spinner diameter="18" class="btn-spinner" />
-              <span>Signing in…</span>
-            </ng-container>
+            <mat-spinner diameter="18" class="mr-2 inline-block align-middle" />
+            <span>Signing in…</span>
           } @else {
             <ng-container>
-              <mat-icon>login</mat-icon>
+              <mat-icon class="!text-[18px] !w-[18px] !h-[18px]">login</mat-icon>
               <span>Sign In</span>
             </ng-container>
           }
