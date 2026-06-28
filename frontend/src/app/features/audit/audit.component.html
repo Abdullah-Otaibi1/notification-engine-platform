@@ -1,23 +1,23 @@
 ﻿<nep-page-header title="Audit Logs" subtitle="Track all system actions for compliance and security auditing" />
 
-<mat-card class="!mb-5 !rounded-2xl">
-  <div class="p-4 flex items-center gap-3 flex-wrap">
-    <mat-form-field appearance="outline" class="flex-1 min-w-[150px] max-w-[220px]">
+<mat-card class="filter-card">
+  <div class="filters">
+    <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Username</mat-label>
       <mat-icon matPrefix>person_search</mat-icon>
       <input matInput [(ngModel)]="filter.username" (keyup.enter)="search()" />
     </mat-form-field>
-    <mat-form-field appearance="outline" class="flex-1 min-w-[150px] max-w-[220px]">
+    <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Action</mat-label>
       <mat-icon matPrefix>bolt</mat-icon>
       <input matInput [(ngModel)]="filter.action" (keyup.enter)="search()" />
     </mat-form-field>
-    <mat-form-field appearance="outline" class="flex-1 min-w-[150px] max-w-[220px]">
+    <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Resource</mat-label>
       <mat-icon matPrefix>inventory_2</mat-icon>
       <input matInput [(ngModel)]="filter.resource" (keyup.enter)="search()" />
     </mat-form-field>
-    <div class="flex gap-2 items-center ml-auto">
+    <div class="filter-actions">
       <button mat-flat-button color="primary" (click)="search()"><mat-icon>search</mat-icon> Search</button>
       <button mat-stroked-button (click)="resetFilter()"><mat-icon>restart_alt</mat-icon></button>
     </div>
@@ -25,35 +25,25 @@
 </mat-card>
 
 @if (loading) { <nep-loading-state message="Loading audit logs…" /> }
-@if (error) {
-  <div class="flex items-center gap-3 px-4 py-3.5 rounded-xl mb-5 text-sm border border-rose-200 bg-rose-50 text-rose-700" role="alert">
-    <mat-icon class="!text-[18px] !w-[18px] !h-[18px] shrink-0">error_outline</mat-icon>
-    <span>{{ error }}</span>
-  </div>
-}
+@if (error)   { <div class="error-banner" role="alert"><mat-icon>error_outline</mat-icon>{{ error }}</div> }
 
 @if (!loading) {
-  <mat-card class="!rounded-2xl overflow-hidden">
-    <table mat-table [dataSource]="logs" class="w-full">
+  <mat-card class="data-table-card">
+    <table mat-table [dataSource]="logs" class="full-table">
 
       <ng-container matColumnDef="createdAt">
         <th mat-header-cell *matHeaderCellDef>Timestamp</th>
-        <td mat-cell *matCellDef="let r">
-          <span class="font-['JetBrains_Mono'] text-[11px] text-slate-400 whitespace-nowrap tabular-nums">{{ r.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</span>
-        </td>
+        <td mat-cell *matCellDef="let r" class="time-cell">{{ r.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="username">
         <th mat-header-cell *matHeaderCellDef>User</th>
         <td mat-cell *matCellDef="let r">
-          <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
-                 style="background:linear-gradient(135deg,#0d9488,#14b8a6)">
-              {{ r.username.charAt(0).toUpperCase() }}
-            </div>
+          <div class="user-cell">
+            <div class="user-dot">{{ r.username.charAt(0).toUpperCase() }}</div>
             <div>
-              <span class="block text-[13px] font-semibold text-slate-800 leading-snug">{{ r.username }}</span>
-              <span class="block text-[10.5px] text-slate-400 font-medium">{{ r.role }}</span>
+              <span class="user-name">{{ r.username }}</span>
+              <span class="user-role">{{ r.role }}</span>
             </div>
           </div>
         </td>
@@ -62,35 +52,32 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef>Action</th>
         <td mat-cell *matCellDef="let r">
-          <span class="font-['JetBrains_Mono'] text-[10.5px] font-bold tracking-[0.05em] bg-teal-50 text-teal-700 px-2 py-[2px] rounded-md border border-teal-100 whitespace-nowrap">{{ r.action }}</span>
+          <span class="action-badge">{{ r.action }}</span>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="resource">
         <th mat-header-cell *matHeaderCellDef>Resource</th>
         <td mat-cell *matCellDef="let r">
-          <span class="text-[12px] font-semibold text-slate-600">{{ r.resource }}</span>
+          <span class="resource-label">{{ r.resource }}</span>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="resourceId">
         <th mat-header-cell *matHeaderCellDef>Resource ID</th>
         <td mat-cell *matCellDef="let r">
-          @if (r.resourceId) {
-            <span class="font-['JetBrains_Mono'] text-[11px] bg-slate-50 text-slate-500 px-1.5 py-0.5 rounded border border-slate-100">{{ r.resourceId | slice:0:10 }}…</span>
-          } @else {
-            <span class="text-slate-300">—</span>
-          }
+          @if (r.resourceId) { <span class="mono">{{ r.resourceId | slice:0:10 }}…</span> }
+          @else { <span class="text-muted">—</span> }
         </td>
       </ng-container>
 
       <ng-container matColumnDef="reason">
         <th mat-header-cell *matHeaderCellDef>Reason</th>
-        <td mat-cell *matCellDef="let r" class="text-[13px] text-slate-600">{{ r.reason ?? '—' }}</td>
+        <td mat-cell *matCellDef="let r">{{ r.reason ?? '—' }}</td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="columns"></tr>
-      <tr mat-row *matRowDef="let row; columns: columns;" class="transition-colors hover:bg-teal-50/50"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
     </table>
     @if (!logs.length) {
       <nep-empty-state icon="policy" message="No audit records match your criteria." />

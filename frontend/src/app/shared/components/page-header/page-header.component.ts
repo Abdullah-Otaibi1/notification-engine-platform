@@ -5,18 +5,41 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-    <div class="flex items-start justify-between mb-7 gap-4">
-      <div>
-        <h1 class="m-0 text-[22px] font-extrabold text-slate-900 tracking-tight leading-tight">{{ title }}</h1>
-        @if (subtitle) {
-          <p class="mt-1 m-0 text-[13px] text-slate-500 font-medium">{{ subtitle }}</p>
-        }
+    <div class="page-header">
+      <div class="ph-main">
+        <h1>{{ title }}</h1>
+        @if (subtitle) { <p>{{ subtitle }}</p> }
       </div>
-      <div class="flex items-center gap-2 shrink-0 mt-1">
+      <div class="ph-actions">
         <ng-content />
       </div>
     </div>
   `,
+  styles: [`
+    :host { display: block; }
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    p { margin: 2px 0 0; font-size: 13px; color: var(--text-3); }
+    .ph-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+  `],
 })
 export class PageHeaderComponent {
   @Input() title = '';

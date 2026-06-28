@@ -22,16 +22,6 @@ export class ChannelsComponent implements OnInit {
 
   channelIcon: Record<string, string> = { SMS: 'sms', EMAIL: 'email', PUSH: 'notifications_active' };
 
-  private readonly CHIP_BASE = 'inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-full text-[10.5px] font-semibold whitespace-nowrap border tracking-wide';
-
-  statusChipClass(s: string): string {
-    const sl = s?.toLowerCase();
-    if (sl === 'healthy')  return `${this.CHIP_BASE} bg-emerald-50 text-emerald-700 border-emerald-200`;
-    if (sl === 'degraded') return `${this.CHIP_BASE} bg-amber-50 text-amber-700 border-amber-200`;
-    if (sl === 'down')     return `${this.CHIP_BASE} bg-rose-50 text-rose-700 border-rose-200`;
-    return `${this.CHIP_BASE} bg-slate-50 text-slate-500 border-slate-200`;
-  }
-
   ngOnInit() {
     this.loading = true;
     this.error = '';

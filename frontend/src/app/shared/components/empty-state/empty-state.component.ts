@@ -7,13 +7,11 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [MatIconModule, MatButtonModule],
   template: `
-    <div class="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
-      <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-1">
-        <mat-icon class="!text-[28px] !w-7 !h-7 text-slate-400">{{ icon }}</mat-icon>
-      </div>
-      <p class="m-0 text-[14px] font-semibold text-slate-500">{{ message }}</p>
+    <div class="empty-state">
+      <mat-icon>{{ icon }}</mat-icon>
+      <p>{{ message }}</p>
       @if (actionLabel) {
-        <button mat-stroked-button color="primary" (click)="action.emit()" class="mt-1">
+        <button mat-stroked-button color="primary" (click)="action.emit()">
           {{ actionLabel }}
         </button>
       }

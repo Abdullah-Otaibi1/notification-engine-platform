@@ -1,152 +1,104 @@
-<mat-sidenav-container class="h-screen">
+<mat-sidenav-container class="shell-container">
 
   <!-- ====== Sidebar ====== -->
   <mat-sidenav
     [mode]="isMobile() ? 'over' : 'side'"
     [opened]="isMobile() ? sidenavOpen() : true"
-    class="flex flex-col overflow-hidden"
-    style="width: 256px"
+    class="sidenav"
     (closedStart)="sidenavOpen.set(false)">
 
-    <!-- Logo -->
-    <div class="px-5 h-[64px] flex items-center shrink-0 border-b border-white/[0.06]"
-         style="background:var(--sidebar-header)">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 relative"
-             style="background:linear-gradient(135deg,#0d9488,#14b8a6)">
-          <mat-icon class="!text-[18px] !w-[18px] !h-[18px] text-white relative z-10">notifications_active</mat-icon>
-          <div class="absolute inset-0 rounded-xl opacity-40"
-               style="box-shadow:0 0 16px rgba(13,148,136,0.8)"></div>
-        </div>
-        <div class="flex flex-col leading-none">
-          <span class="text-[14px] font-bold tracking-tight" style="color:#f0f6ff">NE Platform</span>
-          <span class="text-[10px] font-semibold tracking-[0.12em] uppercase mt-0.5"
-                style="color:rgba(100,116,139,0.8)">Operations</span>
+    <!-- Logo Header -->
+    <div class="nav-header">
+      <div class="nav-logo">
+        <div class="logo-mark"><mat-icon>notifications_active</mat-icon></div>
+        <div class="logo-text">
+          <span class="logo-name">NE Platform</span>
+          <span class="logo-env">Operations</span>
         </div>
       </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="flex-1 overflow-y-auto overflow-x-hidden py-3">
-
-      <p class="px-5 pt-3 pb-1.5 text-[10px] font-bold tracking-[0.12em] uppercase m-0"
-         style="color:rgba(100,116,139,0.6)">Monitoring</p>
-      <nav class="px-2.5">
+    <!-- Nav Groups -->
+    <div class="nav-scroll">
+      <div class="nav-section-label">MONITORING</div>
+      <nav class="nav-list">
         @for (item of navItems.slice(0,4); track item.route) {
-          <a class="relative flex items-center gap-2.5 h-9 px-3 rounded-xl mb-0.5 no-underline
-                    text-[13px] font-medium transition-all duration-150 cursor-pointer
-                    hover:bg-white/[0.06] hover:text-[#e2e8f0]"
-             style="color:rgba(203,213,225,0.65)"
-             [routerLink]="item.route"
-             routerLinkActive="nav-active"
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active"
              (click)="closeSidenavOnMobile()">
-            <mat-icon class="nav-icon !text-[17px] !w-[17px] !h-[17px] shrink-0 transition-colors duration-150"
-                      style="color:rgba(100,116,139,0.7)">{{ item.icon }}</mat-icon>
-            <span class="flex-1 leading-none">{{ item.label }}</span>
-            @if (item.preview) {
-              <span class="text-[9px] font-bold tracking-[0.1em] uppercase px-1.5 py-0.5 rounded-md"
-                    style="background:rgba(255,255,255,0.07);color:rgba(148,163,184,0.6)">Beta</span>
-            }
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+            @if (item.preview) { <span class="nav-soon">Soon</span> }
           </a>
         }
       </nav>
 
-      <p class="px-5 pt-4 pb-1.5 text-[10px] font-bold tracking-[0.12em] uppercase m-0"
-         style="color:rgba(100,116,139,0.6)">Configuration</p>
-      <nav class="px-2.5">
+      <div class="nav-section-label">CONFIGURATION</div>
+      <nav class="nav-list">
         @for (item of navItems.slice(4,9); track item.route) {
-          <a class="relative flex items-center gap-2.5 h-9 px-3 rounded-xl mb-0.5 no-underline
-                    text-[13px] font-medium transition-all duration-150 cursor-pointer
-                    hover:bg-white/[0.06] hover:text-[#e2e8f0]"
-             style="color:rgba(203,213,225,0.65)"
-             [routerLink]="item.route"
-             routerLinkActive="nav-active"
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active"
              (click)="closeSidenavOnMobile()">
-            <mat-icon class="nav-icon !text-[17px] !w-[17px] !h-[17px] shrink-0 transition-colors duration-150"
-                      style="color:rgba(100,116,139,0.7)">{{ item.icon }}</mat-icon>
-            <span class="flex-1 leading-none">{{ item.label }}</span>
-            @if (item.preview) {
-              <span class="text-[9px] font-bold tracking-[0.1em] uppercase px-1.5 py-0.5 rounded-md"
-                    style="background:rgba(255,255,255,0.07);color:rgba(148,163,184,0.6)">Beta</span>
-            }
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+            @if (item.preview) { <span class="nav-soon">Soon</span> }
           </a>
         }
       </nav>
 
-      <p class="px-5 pt-4 pb-1.5 text-[10px] font-bold tracking-[0.12em] uppercase m-0"
-         style="color:rgba(100,116,139,0.6)">Operations</p>
-      <nav class="px-2.5">
+      <div class="nav-section-label">OPERATIONS</div>
+      <nav class="nav-list">
         @for (item of navItems.slice(9); track item.route) {
-          <a class="relative flex items-center gap-2.5 h-9 px-3 rounded-xl mb-0.5 no-underline
-                    text-[13px] font-medium transition-all duration-150 cursor-pointer
-                    hover:bg-white/[0.06] hover:text-[#e2e8f0]"
-             style="color:rgba(203,213,225,0.65)"
-             [routerLink]="item.route"
-             routerLinkActive="nav-active"
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="nav-item--active"
              (click)="closeSidenavOnMobile()">
-            <mat-icon class="nav-icon !text-[17px] !w-[17px] !h-[17px] shrink-0 transition-colors duration-150"
-                      style="color:rgba(100,116,139,0.7)">{{ item.icon }}</mat-icon>
-            <span class="flex-1 leading-none">{{ item.label }}</span>
-            @if (item.preview) {
-              <span class="text-[9px] font-bold tracking-[0.1em] uppercase px-1.5 py-0.5 rounded-md"
-                    style="background:rgba(255,255,255,0.07);color:rgba(148,163,184,0.6)">Beta</span>
-            }
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label">{{ item.label }}</span>
+            @if (item.preview) { <span class="nav-soon">Soon</span> }
           </a>
         }
       </nav>
     </div>
 
-    <!-- User footer -->
+    <!-- User Area at Bottom -->
     @if (auth.user(); as user) {
-      <div class="shrink-0 flex items-center gap-3 p-3.5 border-t border-white/[0.06]"
-           style="background:rgba(0,0,0,0.25)">
-        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-bold text-white shrink-0"
-             [style.background]="roleColor()">
+      <div class="nav-user">
+        <div class="user-avatar" [style.background]="roleColor()">
           {{ user.displayName.charAt(0).toUpperCase() }}
         </div>
-        <div class="flex-1 overflow-hidden">
-          <span class="block text-[12px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis"
-                style="color:rgba(226,232,240,0.9)">{{ user.displayName }}</span>
-          <span class="block text-[10px] font-medium" style="color:rgba(148,163,184,0.6)">{{ user.role }}</span>
+        <div class="user-info">
+          <span class="user-name">{{ user.displayName }}</span>
+          <span class="user-role">{{ user.role }}</span>
         </div>
-        <button mat-icon-button (click)="auth.logout()" matTooltip="Sign out"
-                class="!w-7 !h-7 shrink-0 transition-colors"
-                style="color:rgba(148,163,184,0.5)">
-          <mat-icon class="!text-[15px] !w-[15px] !h-[15px]">logout</mat-icon>
+        <button mat-icon-button class="logout-btn" (click)="auth.logout()" matTooltip="Sign out">
+          <mat-icon>logout</mat-icon>
         </button>
       </div>
     }
   </mat-sidenav>
 
   <!-- ====== Main Area ====== -->
-  <mat-sidenav-content class="flex flex-col overflow-hidden">
+  <mat-sidenav-content class="main-area">
 
-    <!-- Toolbar -->
-    <mat-toolbar class="!h-[60px] !px-6 flex items-center shrink-0">
-      <div class="flex-1">
+    <!-- Top Bar -->
+    <mat-toolbar class="app-toolbar">
+      <div class="toolbar-left">
         @if (isMobile()) {
-          <button mat-icon-button class="text-slate-500" (click)="toggleSidenav()">
+          <button mat-icon-button class="toolbar-btn" (click)="toggleSidenav()" aria-label="Toggle navigation">
             <mat-icon>menu</mat-icon>
           </button>
         }
       </div>
-      <div class="flex items-center gap-2">
-        <button mat-icon-button class="text-slate-400 hover:text-slate-700 transition-colors"
+      <div class="toolbar-right">
+        <button mat-icon-button class="toolbar-btn"
                 (click)="theme.toggle()"
-                [matTooltip]="theme.mode() === 'dark' ? 'Light mode' : 'Dark mode'">
-          <mat-icon class="!text-[18px] !w-[18px] !h-[18px]">{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+                [matTooltip]="theme.mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+          <mat-icon>{{ theme.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
 
         @if (auth.user(); as user) {
-          <div class="flex items-center gap-2.5 pl-1.5 pr-3.5 py-1 rounded-full border border-slate-200 bg-white ml-1 cursor-default"
-               style="box-shadow:0 1px 4px rgba(15,23,42,0.06)">
-            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                 [style.background]="roleColor()">
-              {{ user.displayName.charAt(0).toUpperCase() }}
-            </div>
-            <div class="hidden md:flex flex-col leading-none">
-              <span class="text-[12px] font-semibold text-slate-800">{{ user.displayName }}</span>
-              <span class="text-[10px] font-semibold mt-0.5" [style.color]="roleColor()">{{ user.role }}</span>
+          <div class="toolbar-user">
+            <div class="t-avatar" [style.background]="roleColor()">{{ user.displayName.charAt(0).toUpperCase() }}</div>
+            <div class="t-info">
+              <span class="t-name">{{ user.displayName }}</span>
+              <span class="t-role" [style.color]="roleColor()">{{ user.role }}</span>
             </div>
           </div>
         }
@@ -154,7 +106,7 @@
     </mat-toolbar>
 
     <!-- Page Content -->
-    <main class="flex-1 overflow-y-auto overflow-x-hidden p-5 md:p-7">
+    <main class="page-content">
       <router-outlet />
     </main>
 

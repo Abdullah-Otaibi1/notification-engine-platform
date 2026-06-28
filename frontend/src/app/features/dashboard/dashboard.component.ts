@@ -33,13 +33,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
 
   kpiCards = [
-    { key: 'total',       label: 'Total Notifications', icon: 'inbox',            color: '#0d9488' },
+    { key: 'total',       label: 'Total Notifications', icon: 'inbox',            color: '#2563eb' },
     { key: 'success',     label: 'Delivered',           icon: 'check_circle',     color: '#059669' },
-    { key: 'failure',     label: 'Failed',              icon: 'cancel',           color: '#e11d48' },
+    { key: 'failure',     label: 'Failed',              icon: 'cancel',           color: '#dc2626' },
     { key: 'pending',     label: 'Pending',             icon: 'hourglass_empty',  color: '#d97706' },
     { key: 'inFlight',    label: 'In-Flight',           icon: 'send',             color: '#0891b2' },
     { key: 'successRate', label: 'Success Rate',        icon: 'trending_up',      color: '#059669', suffix: '%' },
-    { key: 'failureRate', label: 'Failure Rate',        icon: 'trending_down',    color: '#e11d48', suffix: '%' },
+    { key: 'failureRate', label: 'Failure Rate',        icon: 'trending_down',    color: '#dc2626', suffix: '%' },
     { key: 'queueDepth',  label: 'Queue Depth',         icon: 'queue',            color: '#7c3aed' },
   ];
 
@@ -85,7 +85,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const base = (height = 230) => ({
       height, toolbar: { show: false }, background: bg,
-      fontFamily: '"DM Sans", "Roboto", sans-serif',
+      fontFamily: '"Inter", "Roboto", sans-serif',
       animations: { enabled: true, speed: 500 },
     });
 
@@ -97,7 +97,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         { name: 'Total',   data: data.trend.map(t => t.total)   },
       ],
       chart:  { ...base(220), type: 'area' },
-      colors: ['#059669', '#e11d48', '#0d9488'],
+      colors: ['#059669', '#dc2626', '#2563eb'],
       fill:   { type: 'gradient', gradient: { opacityFrom: 0.3, opacityTo: 0.02, stops: [0, 90] } },
       stroke: { curve: 'smooth', width: 2 },
       markers: { size: 3, strokeWidth: 0 },
@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       series:  [sv.success, sv.failure, sv.other],
       chart:   { ...base(220), type: 'donut' },
       labels:  ['Success', 'Failure', 'Other'],
-      colors:  ['#059669', '#e11d48', '#94a3b8'],
+      colors:  ['#059669', '#dc2626', '#94a3b8'],
       legend:  { position: 'bottom', labels: { colors: tc }, fontSize: '12px' },
       tooltip: { theme: tip },
       dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] }, dropShadow: { enabled: false } },
@@ -125,7 +125,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.channelOptions = {
       series:  [{ name: 'Notifications', data: data.channelDistribution.map(c => c.count) }],
       chart:   { ...base(220), type: 'bar' },
-      colors:  ['#0d9488'],
+      colors:  ['#2563eb'],
       xaxis:   { categories: data.channelDistribution.map(c => c.channel), labels: { style: { colors: tc, fontSize: '12px' } }, axisBorder: { show: false } },
       yaxis:   { labels: { style: { colors: tc, fontSize: '11px' } } },
       grid:    { borderColor: gc, strokeDashArray: 4, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
@@ -139,7 +139,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.providerOptions = {
       series:  [{ name: 'Success Rate', data: data.providerDistribution.map(p => +p.successRate.toFixed(1)) }],
       chart:   { ...base(220), type: 'bar' },
-      colors:  ['#0d9488'],
+      colors:  ['#7c3aed'],
       xaxis:   { categories: data.providerDistribution.map(p => p.name), labels: { style: { colors: tc, fontSize: '11px' }, rotate: -20, trim: false } },
       yaxis:   { min: 80, max: 100, labels: { style: { colors: tc, fontSize: '11px' }, formatter: (v: number) => v + '%' } },
       grid:    { borderColor: gc, strokeDashArray: 4 },

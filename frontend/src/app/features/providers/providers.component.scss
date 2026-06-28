@@ -1,1 +1,31 @@
-﻿
+﻿.provider-cell {
+  display: flex; align-items: center; gap: 8px;
+  .provider-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    &.healthy  { background: var(--c-success); box-shadow: 0 0 4px var(--c-success); }
+    &.degraded { background: var(--c-warning); }
+    &.down     { background: var(--c-failure); }
+  }
+}
+
+.status-chip {
+  .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 5px;
+    .success &, .healthy & { background: var(--c-success); }
+    .warning &, .degraded & { background: var(--c-warning); }
+    .failure &, .down & { background: var(--c-failure); }
+  }
+}
+
+.rate-cell {
+  display: flex; align-items: center; gap: 8px;
+  .rate-bar { height: 4px; border-radius: 2px; min-width: 0; flex-shrink: 0;
+    &.success-bar { background: var(--c-success); }
+  }
+}
+
+.rate-val {
+  font-size: 13px; font-weight: 600; white-space: nowrap;
+  &.success { color: var(--c-success-text); }
+  &.failure { color: var(--c-failure-text); }
+}
+
+.metric-cell { font-size: 13px; color: var(--text-2); white-space: nowrap; }

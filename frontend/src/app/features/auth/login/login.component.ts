@@ -21,13 +21,6 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  readonly features = [
-    { icon: 'speed',                label: 'Real-time monitoring' },
-    { icon: 'manage_search',        label: 'Notification tracing' },
-    { icon: 'notifications_active', label: 'Multi-channel delivery' },
-    { icon: 'policy',               label: 'Audit & compliance' },
-  ];
-
   form = this.fb.group({
     username: ['', Validators.required],
     password: ['', Validators.required],
